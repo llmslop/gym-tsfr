@@ -1,0 +1,298 @@
+"use client";
+
+import { Link, useRouter } from "@/i18n/navigation";
+import {
+  ArrowRightEndOnRectangleIcon,
+  ArrowRightIcon,
+  CheckBadgeIcon,
+  EnvelopeIcon,
+  EyeIcon,
+  EyeSlashIcon,
+  LockClosedIcon,
+  PhoneIcon,
+  ShieldCheckIcon,
+  ShieldExclamationIcon,
+  UserIcon,
+} from "@heroicons/react/24/solid";
+import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import z from "zod";
+import { authClient } from "@/lib/auth-client";
+import { useSessionStorage } from "usehooks-ts";
+
+export default function LoginPage() {
+  const formSchema = z
+    .object({
+      name: z
+        .string()
+        .min(2, "Name must have at least 2 characters")
+        .default(""),
+      phoneNumber: z
+        .string()
+        .nonempty("Your phone number is required")
+        .default(""),
+      email: z.email("Must be a valid email address").default(""),
+      password: z
+        .string()
+        .min(8, "Password must have at least 8 characters")
+        .default(""),
+      confirmPassword: z.string().default(""),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      error: "Passwords do not match",
+      path: ["confirmPassword"],
+    });
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(formSchema),
+  });
+
+  const [_, setPendingEmail] = useSessionStorage("pendingEmail", "");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isPending, setPending] = useState(false);
+  const router = useRouter();
+
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
+    try {
+      setPending(true);
+      setAuthError(null);
+
+      await authClient.signUp.email(
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phoneNumber: formData.phoneNumber,
+          callbackURL: "/auth/login",
+        },
+        {
+          onError: (context) => {
+            setAuthError(context.error.message);
+          },
+        },
+      );
+    } finally {
+      setPendingEmail(formData.email);
+      setPending(false);
+      router.push("/auth/register-done");
+    }
+  };
+
+  return (
+    <main className="grid grid-cols-1 grid-rows-1 lg:grid-cols-2 items-center min-h-screen group">
+      <div className="flex w-full h-full row-start-1 col-start-1 justify-center items-center text-neutral-content bg-cover bg-center bg-linear-to-b from-green-700/90 to-green-950/90 dark:from-lime-700/90 dark:to-lime-950/90">
+        <div className="hidden lg:flex flex-col">
+          <div className="flex flex-col items-center">
+            <h1 className="font-bold text-5xl">Start the journey</h1>
+            <h1 className="font-bold text-5xl text-primary mb-16">
+              To transform yourself
+            </h1>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="badge badge-primary p-4">
+              <CheckBadgeIcon className="size-6" />
+              100% Brand New Equipments
+            </div>
+            <div className="badge badge-primary p-4">
+              <CheckBadgeIcon className="size-6" />
+              Professional Trainers
+            </div>
+            <div className="badge badge-primary p-4">
+              <CheckBadgeIcon className="size-6" />
+              Sauna & Spa
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="z-1 row-start-1 col-start-1 lg:col-start-2 flex justify-center items-center m-8">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="rounded-xl bg-base-200 text-base-content p-8 w-full max-w-md"
+        >
+          <fieldset className="fieldset">
+            <legend className="fieldset-legend flex flex-col items-start mb-4">
+              <h1 className="font-bold text-3xl">Register your account</h1>
+              <p className="font-medium text-base-content/70">
+                Join the community and start your fitness journey today!
+              </p>
+            </legend>
+
+            {authError && (
+              <p className="text-error text-center text-sm space-y-2">
+                {authError}
+              </p>
+            )}
+
+            <label htmlFor="email" className="font-bold">
+              Email
+            </label>
+            <div className="mb-4 w-full">
+              <div className="relative w-full mb-2">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 z-2 animate-pulse">
+                  <EnvelopeIcon className="size-4" />
+                </span>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="Your email here"
+                  className="input input-bordered w-full pl-8"
+                  {...register("email")}
+                />
+              </div>
+
+              {errors.email && (
+                <p className="text-error">{errors.email.message}</p>
+              )}
+            </div>
+
+            <label htmlFor="name" className="font-bold">
+              Full name
+            </label>
+            <div className="mb-4 w-full">
+              <div className="relative w-full mb-2">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 z-2 animate-pulse">
+                  <UserIcon className="size-4" />
+                </span>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Your full name here"
+                  className="input input-bordered w-full pl-8"
+                  {...register("name")}
+                />
+              </div>
+
+              {errors.name && (
+                <p className="text-error">{errors.name.message}</p>
+              )}
+            </div>
+
+            <label htmlFor="phone-number" className="font-bold">
+              Phone number
+            </label>
+            <div className="mb-4 w-full">
+              <div className="relative w-full mb-2">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 z-2 animate-pulse">
+                  <PhoneIcon className="size-4" />
+                </span>
+                <input
+                  id="phone-number"
+                  type="text"
+                  placeholder="Your phone number here"
+                  className="input input-bordered w-full pl-8"
+                  {...register("phoneNumber")}
+                />
+              </div>
+
+              {errors.email && (
+                <p className="text-error">{errors.email.message}</p>
+              )}
+            </div>
+
+            <label htmlFor="password" className="font-bold">
+              Password
+            </label>
+            <div className="mb-4 w-full">
+              <div className="relative w-full mb-2">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 z-2 animate-pulse">
+                  <LockClosedIcon className="size-4" />
+                </span>
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="btn btn-ghost btn-xs absolute right-2 top-1/2 -translate-y-1/2 z-2 px-1"
+                >
+                  {showPassword ? (
+                    <EyeSlashIcon className="size-4" />
+                  ) : (
+                    <EyeIcon className="size-4" />
+                  )}
+                </button>
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Your password here"
+                  className="input input-bordered w-full pl-8"
+                  {...register("password")}
+                />
+              </div>
+
+              {errors.password && (
+                <p className="text-error">{errors.password.message}</p>
+              )}
+            </div>
+
+            <label htmlFor="confirm-password" className="font-bold">
+              Confirm Password
+            </label>
+            <div className="mb-4 w-full">
+              <div className="relative w-full mb-2">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/30 z-2 animate-pulse">
+                  <ShieldExclamationIcon className="size-4" />
+                </span>
+                <button
+                  tabIndex={-1}
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="btn btn-ghost btn-xs absolute right-2 top-1/2 -translate-y-1/2 z-2 px-1"
+                >
+                  {showConfirmPassword ? (
+                    <EyeSlashIcon className="size-4" />
+                  ) : (
+                    <EyeIcon className="size-4" />
+                  )}
+                </button>
+                <input
+                  id="confirm-password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="Retype your password here"
+                  className="input input-bordered w-full pl-8"
+                  {...register("confirmPassword")}
+                />
+              </div>
+
+              {errors.confirmPassword && watch("confirmPassword") !== "" && (
+                <p className="text-error">{errors.confirmPassword.message}</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isPending}
+              className="btn btn-primary w-full mt-4 shadow-2xl"
+            >
+              Sign up
+              <ArrowRightEndOnRectangleIcon className="size-6" />
+            </button>
+          </fieldset>
+          <div className="flex w-full items-center gap-4 text-base-content/50">
+            <div className="h-0.5 bg-base-300 my-6 flex-1"></div>
+            <p>Or</p>
+            <div className="h-0.5 bg-base-300 my-6 flex-1"></div>
+          </div>
+          <div className="text-center text-sm">
+            Already got an account?{" "}
+            <Link className="link link-primary" href="/auth/login">
+              Sign in here!
+            </Link>
+          </div>
+          <div className="text-center text-xs mt-4 text-base-content/50">
+            © 2025 btmxh, Kurogaisha Group. Version 1.2.6
+          </div>
+        </form>
+      </div>
+    </main>
+  );
+}

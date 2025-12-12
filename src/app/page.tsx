@@ -1,4 +1,5 @@
-import { Link } from "@/i18n/navigation";
+import { Link, redirect, useRouter } from "@/i18n/navigation";
+import { authClient } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
@@ -67,7 +68,9 @@ export default function Dashboard() {
               the way. Join a community that celebrates progress, encourages
               consistency, and believes in your potential.
             </p>
-            <button className="btn btn-primary">Get Started</button>
+            <Link href="/auth/register" className="btn btn-primary">
+              Get Started
+            </Link>
           </div>
         </div>
       </section>

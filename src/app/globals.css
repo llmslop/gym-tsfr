@@ -4,6 +4,8 @@
   themes: lemonade --default, abyss;
 }
 
+@custom-variant dark (&:where([data-theme=abyss], [data-theme=abyss] *));
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
