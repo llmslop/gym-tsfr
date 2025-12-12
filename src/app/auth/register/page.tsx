@@ -21,23 +21,24 @@ import { useState } from "react";
 import z from "zod";
 import { authClient } from "@/lib/auth-client";
 import { useSessionStorage } from "usehooks-ts";
+import React from "react";
 
-export default function LoginPage() {
+export default function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    email?: string;
+    name?: string;
+    phone?: string;
+  }>;
+}) {
+  const { email, name, phone } = React.use(searchParams);
   const formSchema = z
     .object({
-      name: z
-        .string()
-        .min(2, "Name must have at least 2 characters")
-        .default(""),
-      phoneNumber: z
-        .string()
-        .nonempty("Your phone number is required")
-        .default(""),
+      name: z.string().min(2, "Name must have at least 2 characters"),
+      phoneNumber: z.string().nonempty("Your phone number is required"),
       email: z.email("Must be a valid email address").default(""),
-      password: z
-        .string()
-        .min(8, "Password must have at least 8 characters")
-        .default(""),
+      password: z.string().min(8, "Password must have at least 8 characters"),
       confirmPassword: z.string().default(""),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -52,6 +53,11 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: name ?? "",
+      email: email ?? "",
+      phoneNumber: phone ?? "",
+    },
   });
 
   const [_, setPendingEmail] = useSessionStorage("pendingEmail", "");

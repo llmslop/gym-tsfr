@@ -1,7 +1,10 @@
+"use client";
+
 import { Link, redirect, useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useState } from "react";
 
 function GymEmbraceMention() {
   return <span className="font-bold">GymEmbrace</span>;
@@ -42,6 +45,58 @@ function Testimony({
 
       <div className="p-2 text-2sm">{children}</div>
     </div>
+  );
+}
+
+function SignUpForm() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+
+  return (
+    <fieldset className="fieldset">
+      <label htmlFor="sign-up-email">Email</label>
+      <input
+        id="sign-up-email"
+        type="email"
+        className="input"
+        placeholder="Your email here"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <label htmlFor="sign-up-name">Name</label>
+      <input
+        id="sign-up-name"
+        type="text"
+        className="input"
+        placeholder="Your name here"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <label htmlFor="sign-up-phone">Phone Number</label>
+      <input
+        id="sign-up-phone"
+        type="text"
+        className="input"
+        placeholder="Your phone number here"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+      />
+
+      <button
+        onClick={() => {
+          const url = new URL("/auth/register", window.location.origin);
+          url.searchParams.append("email", email);
+          url.searchParams.append("name", name);
+          url.searchParams.append("phone", phone);
+          router.push(url.toString());
+        }}
+        className="btn btn-primary mt-4"
+      >
+        Sign me up!
+      </button>
+    </fieldset>
   );
 }
 
@@ -241,31 +296,7 @@ export default function Dashboard() {
 
           <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow 2xl text-base-content">
             <div className="card-body">
-              <fieldset className="fieldset">
-                <label htmlFor="sign-up-email">Email</label>
-                <input
-                  id="sign-up-email"
-                  type="email"
-                  className="input"
-                  placeholder="Your email here"
-                />
-                <label htmlFor="sign-up-name">Name</label>
-                <input
-                  id="sign-up-name"
-                  type="text"
-                  className="input"
-                  placeholder="Your name here"
-                />
-                <label htmlFor="sign-up-phone">Phone Number</label>
-                <input
-                  id="sign-up-phone"
-                  type="text"
-                  className="input"
-                  placeholder="Your phone number here"
-                />
-
-                <button className="btn btn-primary mt-4">Sign me up!</button>
-              </fieldset>
+              <SignUpForm />
             </div>
           </div>
         </div>
