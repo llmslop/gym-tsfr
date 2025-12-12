@@ -12,6 +12,8 @@ Relevant docs:
 
 [Bun](https://bun.sh/) is the recommended package manager for this project.
 
+Copy `.env.example` to `.env` and fill in the required environment variables.
+
 Install dependencies:
 
 ```bash
