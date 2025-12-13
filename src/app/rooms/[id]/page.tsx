@@ -4,13 +4,17 @@ import { use, useRef } from "react";
 import { api } from "@/lib/eden";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { UpdateRoomForm } from "@/components/rooms/UpdateRoomForm";
 import { DeleteRoomForm } from "@/components/rooms/DeleteRoomForm";
+import { authClient } from "@/lib/auth-client";
+import { EquipmentList } from "./equipments";
 
 export default function RoomPage(props: { params: Promise<{ id: string }> }) {
+  const session = authClient.useSession();
   const router = useRouter();
+  const formatter = useFormatter();
   const updateDialogRef = useRef<HTMLDialogElement | null>(null);
   const deleteDialogRef = useRef<HTMLDialogElement | null>(null);
   const t = useTranslations("Room");
@@ -78,6 +82,10 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
                 <span>Currently Inactive</span>
               )}
             </p>
+            <p className="text-xs text-base-content/50">
+              Created at: {formatter.dateTime(room.createdAt)} — Last update:{" "}
+              {formatter.dateTime(room.updatedAt)}
+            </p>
           </div>
           <div className="join">
             <button
@@ -126,6 +134,34 @@ export default function RoomPage(props: { params: Promise<{ id: string }> }) {
         </div>
       </section>
       <div className="divider"></div>
+
+      <section
+        className="w-full max-w-6xl px-2 py-2 tabs tabs-lift"
+        role="tablist"
+      >
+        <input
+          type="radio"
+          name="room_details_tab"
+          className="tab"
+          aria-label="Equipments"
+          defaultChecked
+        />
+        <div className="tab-content border-base-300 bg-base-100 p-10">
+          <EquipmentList roomId={room._id} />
+        </div>
+
+        <input
+          type="radio"
+          name="room_details_tab"
+          className="tab"
+          aria-label="Assigned staff"
+          // TODO; proper role system
+          disabled={session.data?.user?.role !== "admin"}
+        />
+        <div className="tab-content border-base-300 bg-base-100 p-10">
+          Tab content 2
+        </div>
+      </section>
     </main>
   );
 }

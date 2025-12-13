@@ -4,6 +4,7 @@ import { roomTypes, RoomWithId } from "@/lib/gym/room";
 import { z } from "zod";
 import Elysia from "elysia";
 import { ObjectId } from "mongodb";
+import { Equipment, EquipmentWithId } from "@/lib/gym/equipment";
 
 export const roomsRouter = new Elysia({ prefix: "/rooms" })
   .get("/list", async () => {
@@ -21,6 +22,25 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
     }
     return { ...room, _id: room._id.toString() } as RoomWithId;
   })
+  .get(
+    "/:id/equipments/list",
+    async ({ body, params: { id } }) => {
+      return (
+        (await db
+          .collection("equipments")
+          .find({ roomId: new ObjectId(id) })
+          // .skip(offset)
+          // .limit(limit)
+          .toArray()) as unknown as EquipmentWithId[]
+      );
+    },
+    {
+      body: z.object({
+        offset: z.number().min(0),
+        limit: z.number().min(1).max(20),
+      }),
+    },
+  )
   .patch(
     "/update/:id",
     async ({ params, body, status, request }) => {
@@ -59,6 +79,60 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
       }),
     },
   )
+  .patch(
+    "/:id/equipments/:equipmentId/update",
+    async ({
+      status,
+      params: { id, equipmentId },
+      body: { newRoomId, name, quantity, origin, warrantyUntil, isActive },
+      request,
+    }) => {
+      const session = await auth.api.getSession({ headers: request.headers });
+
+      // TODO: use a proper permission system
+      if (!session || session.user.role !== "admin")
+        return status(401, {
+          message: "Unauthorized",
+        });
+
+      const now = new Date();
+
+      const result = await db.collection("equipments").updateOne(
+        { _id: new ObjectId(equipmentId), roomId: new ObjectId(id) },
+        {
+          $set: {
+            roomId: newRoomId ? new ObjectId(newRoomId) : undefined,
+            name,
+            quantity,
+            origin,
+            warrantyUntil:
+              warrantyUntil || warrantyUntil === undefined
+                ? undefined
+                : new Date(warrantyUntil),
+            isActive,
+            updatedAt: now,
+          },
+        },
+      );
+
+      if (result.matchedCount === 0) {
+        return status(404, { message: "Equipment not found" });
+      }
+      return { message: "Equipment updated successfully" };
+    },
+    {
+      body: z.object({
+        name: z.string().min(1, "Name is required"),
+        quantity: z.number().min(1, "Quantity must be at least 1"),
+        origin: z.string().min(1, "Origin is required"),
+        warrantyUntil: z.preprocess(
+          (arg) => (arg === "" ? undefined : arg),
+          z.iso.date().optional(),
+        ),
+        isActive: z.boolean(),
+      }),
+    },
+  )
   .delete("/:id", async ({ params: { id }, status, request }) => {
     const session = await auth.api.getSession({ headers: request.headers });
     // TODO: use a proper permission system
@@ -74,6 +148,25 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
     }
     return { message: "Room deleted successfully" };
   })
+  .delete(
+    "/:id/equipments/:equipmentId",
+    async ({ params: { id, equipmentId }, status, request }) => {
+      const session = await auth.api.getSession({ headers: request.headers });
+      // TODO: use a proper permission system
+      if (!session || session.user.role !== "admin")
+        return status(401, {
+          message: "Unauthorized",
+        });
+      const result = await db.collection("equipments").findOneAndDelete({
+        _id: new ObjectId(equipmentId),
+        roomId: new ObjectId(id),
+      });
+      if (result === null) {
+        return status(404, { message: "Equipment not found or wrong room ID" });
+      }
+      return { message: "Equipment deleted successfully" };
+    },
+  )
   .post(
     "/create",
     async ({ status, body, request }) => {
@@ -118,6 +211,55 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
         name: z.string().min(3).max(100),
         type: z.enum(roomTypes),
         isActive: z.boolean().default(true),
+      }),
+    },
+  )
+  .post(
+    "/:id/equipments/add",
+    async ({
+      status,
+      params: { id },
+      body: { name, quantity, origin, warrantyUntil, isActive },
+      request,
+    }) => {
+      const session = await auth.api.getSession({ headers: request.headers });
+
+      // TODO: use a proper permission system
+      if (!session || session.user.role !== "admin")
+        return status(401, {
+          message: "Unauthorized",
+        });
+
+      const now = new Date();
+
+      const doc = await db.collection("equipments").insertOne({
+        roomId: new ObjectId(id),
+        name,
+        quantity,
+        origin,
+        warrantyUntil:
+          warrantyUntil || warrantyUntil === undefined
+            ? undefined
+            : new Date(warrantyUntil),
+        isActive,
+        createdAt: now,
+        updatedAt: now,
+      } satisfies Equipment<ObjectId>);
+
+      return {
+        docId: doc.insertedId,
+      };
+    },
+    {
+      body: z.object({
+        name: z.string().min(1, "Name is required"),
+        quantity: z.number().min(1, "Quantity must be at least 1"),
+        origin: z.string().min(1, "Origin is required"),
+        warrantyUntil: z.preprocess(
+          (arg) => (arg === "" ? undefined : arg),
+          z.iso.date().optional(),
+        ),
+        isActive: z.boolean(),
       }),
     },
   );

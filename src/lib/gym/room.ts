@@ -1,5 +1,3 @@
-import { ObjectId } from "mongodb";
-
 export const roomTypes = [
   "gym",
   "yoga",

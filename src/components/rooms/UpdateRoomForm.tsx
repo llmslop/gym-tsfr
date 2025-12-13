@@ -25,7 +25,6 @@ export function UpdateRoomForm({
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
