@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import ThemeController from "./theme-controller";
 import LanguageController from "./lang-controller";
 import {
+  BuildingOfficeIcon,
   ChartPieIcon,
   ChatBubbleLeftRightIcon,
   CubeIcon,
@@ -22,6 +23,7 @@ import { HidePageChrome } from "./hide-page-chrome";
 export default function Navbar() {
   const routes = [
     ["Dashboard", "/dashboard", ChartPieIcon],
+    ["Rooms", "/rooms", BuildingOfficeIcon],
     ["Staff", "/staff", UserGroupIcon],
     ["Packages", "/packages", CubeIcon],
     ["Memberships", "/memberships", UserPlusIcon],

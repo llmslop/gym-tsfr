@@ -18,13 +18,22 @@ export const metadata: Metadata = {
     "Totally not a reference to CTB Girls' Dorm's SOTY candidate Glow Embrace",
 };
 
-export default function RootLayout({
-  children,
-  params: { locale },
-}: Readonly<{
-  children: React.ReactNode;
-  params: { locale: string };
-}>) {
+export default async function RootLayout(
+  props: Readonly<{
+    children: React.ReactNode;
+    params: { locale: string };
+  }>
+) {
+  const params = await props.params;
+
+  const {
+    locale
+  } = params;
+
+  const {
+    children
+  } = props;
+
   return (
     <html suppressHydrationWarning>
       <head />

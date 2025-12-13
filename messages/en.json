@@ -44,5 +44,15 @@
   },
   "HomePage": {
     "lamine": "Lamine Yamal"
+  },
+  "Room": {
+    "roomTypes": {
+      "gym": "Gym",
+      "yoga": "Yoga",
+      "aerobic": "Aerobic",
+      "fitness": "Fitness",
+      "boxing": "Boxing",
+      "crossfit": "CrossFit"
+    }
   }
 }

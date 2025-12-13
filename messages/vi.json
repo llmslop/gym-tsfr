@@ -40,5 +40,15 @@
   },
   "HomePage": {
     "lamine": "Diddy Yamal"
+  },
+  "Room": {
+    "roomTypes": {
+      "gym": "Gym",
+      "yoga": "Yoga",
+      "aerobic": "Aerobic",
+      "fitness": "Thể dục",
+      "boxing": "Đấm bốc",
+      "crossfit": "CrossFit"
+    }
   }
 }

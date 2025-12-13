@@ -4,7 +4,6 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { DayPicker } from "react-day-picker";
 import {
   QueryClient,
   QueryClientProvider,
