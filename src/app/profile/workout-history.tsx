@@ -286,9 +286,12 @@ function WorkoutLog({
   return (
     <fieldset className="fieldset bg-base-200 border-base-300 rounded-box border p-4 w-full max-w-7xl">
       <legend className="fieldset-legend">Workout log</legend>
-      <ul className="grid grid-cols-[auto_auto_1fr] bg-base-100 p-2 text-lg gap-4">
+      <ul className="grid grid-cols-[auto_auto_1fr] bg-base-200 p-2 text-lg">
         {events.map((ev, idx) => (
-          <Fragment key={`workout-log-event-${idx}`}>
+          <div
+            key={`workout-log-event-${idx}`}
+            className="hover:bg-base-300 grid grid-cols-subgrid col-start-1 -col-end-1 p-2 gap-2 items-baseline"
+          >
             <div
               key={`event-date-${idx}`}
               className="text-base text-base-content/70"
@@ -304,7 +307,7 @@ function WorkoutLog({
               {formatTimeShort(ev.time)}
             </div>
             <div key={`event-label-${idx}`}>{eventLabel(ev)}</div>
-          </Fragment>
+          </div>
         ))}
         {hasMore && (
           <div className="flex justify-center col-span-3" ref={loadingElem}>
