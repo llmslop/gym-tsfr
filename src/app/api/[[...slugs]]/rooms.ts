@@ -36,7 +36,7 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
         data.pop();
       }
       return {
-        data,
+        data: data as unknown as EquipmentWithId[],
         hasMore,
       };
     },

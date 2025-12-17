@@ -16,7 +16,7 @@ export function CreateEquipmentForm({
   const schema = z.intersection(
     z.object({
       name: z.string().min(1, "Name is required"),
-      quantity: z.number().min(1, "Quantity must be at least 1"),
+      quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
       origin: z.string().min(1, "Origin is required"),
       isActive: z.boolean(),
     }),
@@ -67,7 +67,7 @@ export function CreateEquipmentForm({
         name,
         quantity,
         origin,
-        warrantyUntil,
+        warrantyUntil: hasWarranty ? warrantyUntil : undefined,
         isActive,
       });
       if (res.status === 200) {

@@ -30,12 +30,11 @@ export function EquipmentList({ roomId }: { roomId: string }) {
   const { data: equipments, isPending } = useQuery({
     queryKey: ["rooms", roomId, "equipments", { offset, limit }],
     queryFn: async () => {
-      if (roomId === undefined) return [];
+      if (roomId === undefined) return { data: [], hasMore: false };
       const res = await api
         .rooms({ id: roomId })
         .equipments.list.get({ query: { offset, limit } });
-      const x = res.data ?? { data: [], hasMore: false };
-      return x;
+      return res.data;
     },
     placeholderData: (data) => data,
   });
@@ -116,50 +115,58 @@ export function EquipmentList({ roomId }: { roomId: string }) {
                 </tr>
               </thead>
               <tbody>
-                {(equipments?.data ?? []).map((equipment) => (
-                  <tr
-                    key={`equipment-${equipment._id}`}
-                    className="hover:bg-base-300"
-                  >
-                    <th>{equipment.name}</th>
-                    <td>{equipment.quantity}</td>
-                    <td>{format.dateTime(equipment.createdAt, {})}</td>
-                    <td>{equipment.origin}</td>
-                    <td>
-                      {equipment.warrantyUntil !== undefined &&
-                      equipment.warrantyUntil !== null
-                        ? format.dateTime(equipment.warrantyUntil, {})
-                        : "-"}
-                    </td>
-                    <td>
-                      {equipment.isActive ? (
-                        <CheckIcon className="size-4" />
-                      ) : (
-                        <XMarkIcon className="size-4" />
-                      )}
-                    </td>
-                    <td className="join">
-                      <button
-                        className="btn btn-accent join-item"
-                        onClick={() => {
-                          setEquipmentToUpdate(equipment);
-                          updateDialogRef.current?.showModal();
-                        }}
-                      >
-                        <PencilSquareIcon className="size-4" />
-                      </button>
-                      <button
-                        className="btn btn-error join-item"
-                        onClick={() => {
-                          setEquipmentToDelete(equipment);
-                          deleteDialogRef.current?.showModal();
-                        }}
-                      >
-                        <TrashIcon className="size-4" />
-                      </button>
+                {(equipments?.data?.length ?? 0) > 0 ? (
+                  (equipments?.data ?? []).map((equipment) => (
+                    <tr
+                      key={`equipment-${equipment._id}`}
+                      className="hover:bg-base-300"
+                    >
+                      <th>{equipment.name}</th>
+                      <td>{equipment.quantity}</td>
+                      <td>{format.dateTime(equipment.createdAt, {})}</td>
+                      <td>{equipment.origin}</td>
+                      <td>
+                        {equipment.warrantyUntil !== undefined &&
+                        equipment.warrantyUntil !== null
+                          ? format.dateTime(equipment.warrantyUntil, {})
+                          : "-"}
+                      </td>
+                      <td>
+                        {equipment.isActive ? (
+                          <CheckIcon className="size-4" />
+                        ) : (
+                          <XMarkIcon className="size-4" />
+                        )}
+                      </td>
+                      <td className="join">
+                        <button
+                          className="btn btn-accent join-item"
+                          onClick={() => {
+                            setEquipmentToUpdate(equipment);
+                            updateDialogRef.current?.showModal();
+                          }}
+                        >
+                          <PencilSquareIcon className="size-4" />
+                        </button>
+                        <button
+                          className="btn btn-error join-item"
+                          onClick={() => {
+                            setEquipmentToDelete(equipment);
+                            deleteDialogRef.current?.showModal();
+                          }}
+                        >
+                          <TrashIcon className="size-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="text-center font-bold h-20">
+                      No equipments found.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>

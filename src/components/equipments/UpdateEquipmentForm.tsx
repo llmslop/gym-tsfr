@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 export function UpdateEquipmentForm({
@@ -16,20 +16,26 @@ export function UpdateEquipmentForm({
   equipment?: EquipmentWithId;
   onSuccess?: () => void;
 }) {
-  const schema = z.object({
-    name: z.string().min(1, "Name is required"),
-    quantity: z.number().min(1, "Quantity must be at least 1"),
-    origin: z.string().min(1, "Origin is required"),
-    warrantyUntil: z.preprocess(
-      (arg) => (arg === "" ? undefined : arg),
-      z.iso.date().optional(),
-    ),
-    isActive: z.boolean(),
-  });
+  const schema = z.intersection(
+    z.object({
+      name: z.string().min(1, "Name is required"),
+      quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
+      origin: z.string().min(1, "Origin is required"),
+      isActive: z.boolean(),
+    }),
+    z.union([
+      z.object({ hasWarranty: z.literal(true), warrantyUntil: z.iso.date() }),
+      z.object({
+        hasWarranty: z.literal(false),
+        warrantyUntil: z.any().optional(),
+      }),
+    ]),
+  );
 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
@@ -37,15 +43,15 @@ export function UpdateEquipmentForm({
       name: equipment?.name ?? "",
       quantity: equipment?.quantity ?? 1,
       origin: equipment?.origin ?? "",
+      hasWarranty: equipment?.warrantyUntil !== undefined,
       warrantyUntil: equipment?.warrantyUntil?.toISOString()?.slice(0, 10),
       isActive: equipment?.isActive ?? false,
     },
   });
 
-  const [hasWarranty, setHasWarranty] = useState(
-    equipment?.warrantyUntil !== undefined,
-  );
   const queryClient = useQueryClient();
+
+  const hasWarranty = useWatch({ control, name: "hasWarranty" });
 
   const {
     mutate: updateEquipment,
@@ -56,6 +62,7 @@ export function UpdateEquipmentForm({
       name,
       quantity,
       origin,
+      hasWarranty,
       warrantyUntil,
       isActive,
     }: z.infer<typeof schema>) {
@@ -66,7 +73,7 @@ export function UpdateEquipmentForm({
           name,
           quantity,
           origin,
-          warrantyUntil,
+          warrantyUntil: hasWarranty ? warrantyUntil : undefined,
           isActive,
         });
       if (res.status === 200) {
