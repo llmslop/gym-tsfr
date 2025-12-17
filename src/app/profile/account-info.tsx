@@ -12,54 +12,6 @@ import {
 import { z } from "zod";
 import { api } from "@/lib/eden";
 
-function ProfilePictureUploader() {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-
-  function handleClick() {
-    fileInputRef.current?.click();
-  }
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    setPreview(url);
-
-    // TODO: send `file` to your server or S3/GCS
-  }
-
-  return (
-    <div className="flex flex-col items-center gap-4">
-      <div
-        className="w-32 h-32 rounded-full bg-base-300 overflow-hidden cursor-pointer ring ring-primary/40 hover:ring-primary transition-all"
-        onClick={handleClick}
-      >
-        {preview ? (
-          <img
-            src={preview}
-            className="w-full h-full object-cover"
-            alt="preview"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-base-content/60">
-            Upload
-          </div>
-        )}
-      </div>
-
-      <input
-        type="file"
-        accept="image/*"
-        className="hidden"
-        ref={fileInputRef}
-        onChange={handleChange}
-      />
-    </div>
-  );
-}
-
 function toDateInputValue(date: Date) {
   return date.toISOString().slice(0, 10);
 }
@@ -428,6 +380,7 @@ function UpdateFingerprint() {
 
         <input
           type="file"
+          className="file-input"
           accept="*/*"
           ref={fileInputRef}
           onChange={(event) => {
