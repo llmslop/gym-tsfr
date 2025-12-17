@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @plugin "daisyui" {
   themes: lemonade --default, abyss;
@@ -17,4 +18,16 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-noto-sans);
+}
+
+[data-theme=abyss] .ql-snow .ql-picker {
+  color: #eee !important;
+}
+
+[data-theme=abyss] .ql-snow .ql-picker-item {
+  color: #444 !important;
+}
+
+[data-theme=abyss] .ql-snow .ql-stroke {
+  stroke: #eee !important;
 }

@@ -13,6 +13,7 @@ import { db } from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { roomsRouter } from "./rooms";
+import { feedbacksRouter } from "./feedbacks";
 
 const app = new Elysia({ prefix: "/api" })
   .use(
@@ -26,6 +27,7 @@ const app = new Elysia({ prefix: "/api" })
   )
   .mount(auth.handler)
   .use(roomsRouter)
+  .use(feedbacksRouter)
   .post(
     "/avatar/upload",
     async ({ body, request }) => {
