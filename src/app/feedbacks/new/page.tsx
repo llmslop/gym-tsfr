@@ -10,12 +10,14 @@ import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
 import { api } from "@/lib/eden";
 import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/components/toast-context";
 const ReactQuill = dynamic(() => import("react-quill-new"), {
   ssr: false,
 });
 
 export default function NewFeedbackPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const schema = z.object({
     title: z.string().min(5, "Title must have at least 5 characters"),
@@ -42,6 +44,9 @@ export default function NewFeedbackPage() {
     },
     onSuccess(data) {
       router.push(`/feedbacks/${data}`);
+    },
+    onError(err) {
+      toast({ type: "error", message: err.message });
     },
   });
 
@@ -78,6 +83,9 @@ export default function NewFeedbackPage() {
               }}
             />
           </div>
+          {errors.body && (
+            <p className="text-error-content">{errors.body.message}</p>
+          )}
           <button
             type="submit"
             className="btn btn-primary mt-4 m-auto"

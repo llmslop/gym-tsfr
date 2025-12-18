@@ -12,6 +12,7 @@ import { ArrowUturnLeftIcon } from "@heroicons/react/24/solid";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import { useToast } from "@/components/toast-context";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), {
   ssr: false,
@@ -28,29 +29,48 @@ export default function FeedbackThreadPage({
   });
 
   const id = React.use(params).id;
+  const toast = useToast();
   const { data: thread, error } = useQuery({
     queryKey: ["feedbacks", id],
     queryFn: async () => {
       const res = await api.feedbacks({ id }).get();
       if (res.status === 200) return res.data;
+      throw new Error(
+        res.error?.value?.message ?? "Failed to load feedback thread",
+      );
     },
   });
 
   const formatter = useFormatter();
   const queryClient = useQueryClient();
 
-  const { register, handleSubmit, setValue, control } = useForm({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    formState: { errors },
+    clearErrors,
+  } = useForm({
     resolver: zodResolver(addReplySchema),
   });
 
   const { mutate: addReply, isPending } = useMutation({
     mutationFn: async (data: z.infer<typeof addReplySchema>) => {
-      await api.feedbacks({ id }).reply.post(data);
+      const res = await api.feedbacks({ id }).reply.post(data);
+      if (res.status === 200) return res.data;
+      throw new Error(res.error?.value?.message ?? "Failed to add reply");
     },
     onSuccess() {
       queryClient.invalidateQueries({ queryKey: ["feedbacks", id] });
+      // HACK: reset doesnt work for some reason
       setValue("title", "");
       setValue("body", "");
+      // HACK: idk wtf is happening here tbh
+      setTimeout(() => clearErrors(), 1);
+    },
+    onError(err) {
+      toast({ type: "error", message: err.message });
     },
   });
 
@@ -147,6 +167,9 @@ export default function FeedbackThreadPage({
           placeholder="Enter title here"
           {...register("title")}
         />
+        {errors.title && (
+          <p className="text-error mt-2">{errors.title.message}</p>
+        )}
 
         <Controller
           control={control}
@@ -162,6 +185,9 @@ export default function FeedbackThreadPage({
             );
           }}
         />
+        {errors.body && (
+          <p className="text-error mt-2">{errors.body.message}</p>
+        )}
 
         <button
           type="submit"
