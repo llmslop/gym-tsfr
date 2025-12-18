@@ -44,7 +44,9 @@ export function UpdateEquipmentForm({
       name: equipment?.name ?? "",
       quantity: equipment?.quantity ?? 1,
       origin: equipment?.origin ?? "",
-      hasWarranty: equipment?.warrantyUntil !== undefined,
+      hasWarranty:
+        equipment?.warrantyUntil !== undefined &&
+        equipment?.warrantyUntil !== null,
       warrantyUntil: equipment?.warrantyUntil?.toISOString()?.slice(0, 10),
       isActive: equipment?.isActive ?? false,
     },
@@ -149,8 +151,7 @@ export function UpdateEquipmentForm({
           <input
             type="checkbox"
             className="checkbox"
-            checked={hasWarranty}
-            onChange={(event) => setHasWarranty(event.target.checked)}
+            {...register("hasWarranty")}
           />
           Has warranty until
         </label>
