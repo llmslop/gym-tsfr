@@ -54,5 +54,59 @@
       "boxing": "Boxing",
       "crossfit": "CrossFit"
     }
+  },
+  "Membership": {
+    "title": "Membership Plans",
+    "subtitle": "Choose the perfect plan for your fitness journey. All plans include access to our world-class facilities.",
+    "popular": "Most Popular",
+    "perPeriod": "per {period}",
+    "choosePlan": "Choose Plan",
+    "errorLoading": "Failed to load membership plans. Please try again later.",
+    "contactInfo": "Need help choosing? Contact our team for personalized recommendations!",
+    "durations": {
+      "1-month": "1 Month",
+      "3-months": "3 Months",
+      "6-months": "6 Months",
+      "1-year": "1 Year"
+    },
+    "features": {
+      "access_all_facilities": "Access to all gym facilities",
+      "basic_equipment": "Basic equipment access",
+      "all_equipment": "All equipment including premium machines",
+      "locker_room": "Personal locker",
+      "shower_facilities": "Shower & changing room",
+      "one_free_personal_training": "1 free personal training session",
+      "three_free_personal_training": "3 free personal training sessions",
+      "unlimited_personal_training": "Unlimited personal training sessions",
+      "discount_10_percent": "10% discount on merchandise",
+      "discount_15_percent": "15% discount on merchandise",
+      "discount_20_percent": "20% discount on merchandise",
+      "nutrition_consultation": "Free nutrition consultation",
+      "priority_booking": "Priority class booking",
+      "free_guest_passes": "2 free guest passes per month",
+      "massage_therapy": "Monthly massage therapy session",
+      "exclusive_events": "Access to exclusive member events"
+    }
+  },
+  "Payment": {
+    "title": "Payment Details",
+    "packageSummary": "Your selected membership plan",
+    "cardInformation": "Card Information",
+    "cardNumber": "Card Number",
+    "cardHolder": "Card Holder Name",
+    "expiryDate": "Expiry Date",
+    "cvv": "CVV",
+    "billingAddress": "Billing Address",
+    "address": "Street Address",
+    "city": "City",
+    "zipCode": "Zip Code",
+    "country": "Country",
+    "cancel": "Cancel",
+    "confirmPayment": "Confirm Payment",
+    "processing": "Processing...",
+    "securityNotice": "Your payment information is encrypted and secure. We never store your card details.",
+    "successTitle": "Payment Successful!",
+    "successMessage": "Your membership has been activated. Welcome to GymEmbrace!",
+    "goToDashboard": "Go to Dashboard"
   }
 }

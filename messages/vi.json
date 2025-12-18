@@ -54,5 +54,59 @@
       "boxing": "Đấm bốc",
       "crossfit": "CrossFit"
     }
+  },
+  "Membership": {
+    "title": "Gói Thành Viên",
+    "subtitle": "Chọn gói phù hợp cho hành trình rèn luyện của bạn. Tất cả gói đều bao gồm quyền truy cập vào cơ sở vật chất đẳng cấp thế giới của chúng tôi.",
+    "popular": "Phổ biến nhất",
+    "perPeriod": "mỗi {period}",
+    "choosePlan": "Chọn gói",
+    "errorLoading": "Không thể tải các gói thành viên. Vui lòng thử lại sau.",
+    "contactInfo": "Cần giúp lựa chọn? Liên hệ đội ngũ của chúng tôi để được tư vấn cá nhân hóa!",
+    "durations": {
+      "1-month": "1 Tháng",
+      "3-months": "3 Tháng",
+      "6-months": "6 Tháng",
+      "1-year": "1 Năm"
+    },
+    "features": {
+      "access_all_facilities": "Truy cập tất cả các phòng tập",
+      "basic_equipment": "Sử dụng thiết bị cơ bản",
+      "all_equipment": "Tất cả thiết bị bao gồm máy cao cấp",
+      "locker_room": "Tủ khóa cá nhân",
+      "shower_facilities": "Phòng tắm & thay đồ",
+      "one_free_personal_training": "1 buổi tập cá nhân miễn phí",
+      "three_free_personal_training": "3 buổi tập cá nhân miễn phí",
+      "unlimited_personal_training": "Tập cá nhân không giới hạn",
+      "discount_10_percent": "Giảm 10% sản phẩm thể thao",
+      "discount_15_percent": "Giảm 15% sản phẩm thể thao",
+      "discount_20_percent": "Giảm 20% sản phẩm thể thao",
+      "nutrition_consultation": "Tư vấn dinh dưỡng miễn phí",
+      "priority_booking": "Ưu tiên đăng ký lớp học",
+      "free_guest_passes": "2 vé khách mời miễn phí mỗi tháng",
+      "massage_therapy": "Buổi massage trị liệu hàng tháng",
+      "exclusive_events": "Tham gia sự kiện độc quyền"
+    }
+  },
+  "Payment": {
+    "title": "Chi Tiết Thanh Toán",
+    "packageSummary": "Gói thành viên bạn đã chọn",
+    "cardInformation": "Thông Tin Thẻ",
+    "cardNumber": "Số Thẻ",
+    "cardHolder": "Tên Chủ Thẻ",
+    "expiryDate": "Ngày Hết Hạn",
+    "cvv": "Mã CVV",
+    "billingAddress": "Địa Chỉ Thanh Toán",
+    "address": "Địa Chỉ",
+    "city": "Thành Phố",
+    "zipCode": "Mã Bưu Điện",
+    "country": "Quốc Gia",
+    "cancel": "Hủy",
+    "confirmPayment": "Xác Nhận Thanh Toán",
+    "processing": "Đang xử lý...",
+    "securityNotice": "Thông tin thanh toán của bạn được mã hóa và bảo mật. Chúng tôi không bao giờ lưu trữ thông tin thẻ của bạn.",
+    "successTitle": "Thanh Toán Thành Công!",
+    "successMessage": "Thành viên của bạn đã được kích hoạt. Chào mừng đến với GymEmbrace!",
+    "goToDashboard": "Về Trang Chính"
   }
 }

@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { Elysia, t } from "elysia";
 import { fromTypes, openapi } from "@elysiajs/openapi";
 import { OpenAPI } from "./auth";
+import { packagesRouter } from "./packages";
 import {
   keyFromPublicAccessUrl,
   publicAccessUrl,
@@ -28,6 +29,7 @@ const app = new Elysia({ prefix: "/api" })
   )
   .mount(auth.handler)
   .use(roomsRouter)
+  .use(packagesRouter)
   .use(feedbacksRouter)
   .use(eventsRouter)
   .post(
