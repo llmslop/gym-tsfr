@@ -1,22 +1,48 @@
 import { authClient } from "@/lib/auth-client";
+import { api } from "@/lib/eden";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import QRCode from "react-qr-code";
+import { useEffect, useState } from "react";
+import { QRCODE_TIMEOUT } from "@/lib/qr";
 
 function QRCodeSection({
   session,
 }: {
   session: typeof authClient.$Infer.Session;
 }) {
-  // #578 rickroll
-  // NOTE: this is only a POC, since the check-in device doesn't really exist
-  const url = new URL("https://www.youtube.com/watch?v=Tsk7dbhAQIA");
-  url.searchParams.append("userId", session.user.id);
+  const queryClient = useQueryClient();
+
+  const [seconds, setSeconds] = useState(QRCODE_TIMEOUT / 1000);
+  const { data: qrCode, isPending } = useQuery({
+    queryKey: ["qr-code-url", session.user.id],
+    queryFn: async () => {
+      setSeconds(QRCODE_TIMEOUT / 1000);
+      const qrcode = await api.events.qrcode.get();
+      if (qrcode.status === 200) return qrcode.data!.url;
+    },
+    refetchInterval: QRCODE_TIMEOUT,
+  });
+
+  useEffect(() => {
+    if (seconds <= 0) return;
+
+    const id = setTimeout(() => {
+      setSeconds((s) => s - 1);
+    }, 1000);
+
+    return () => clearTimeout(id);
+  }, [seconds]);
 
   return (
     <fieldset className="fieldset w-full max-w-lg bg-base-200 border-base-300 rounded-box border p-4 place-items-center">
       <legend className="fieldset-legend">Checkin & Checkout QR Code</legend>
 
       <div className="p-8 bg-white">
-        <QRCode className="" value={url.toString()} />
+        {isPending ? (
+          <div className="size-64"></div>
+        ) : (
+          <QRCode className="size-64" value={qrCode ?? "ERROR"} />
+        )}
       </div>
 
       <p className="text-center">
@@ -24,6 +50,9 @@ function QRCodeSection({
       </p>
       <p className="text-center">
         Checking out is optional, but it helps you keep track of gym usage.
+      </p>
+      <p className="text-center text-base-content/60">
+        Refresh in {seconds} seconds.
       </p>
     </fieldset>
   );
