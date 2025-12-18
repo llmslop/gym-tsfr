@@ -38,6 +38,10 @@
       "Thứ Bảy"
     ]
   },
+  "404": {
+    "notfound": "Không tìm thấy trang này",
+    "return": "Trở về trang chính"
+  },
   "HomePage": {
     "lamine": "Diddy Yamal"
   },
