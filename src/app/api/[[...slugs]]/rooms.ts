@@ -1,19 +1,23 @@
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { roomTypes, RoomWithId } from "@/lib/gym/room";
 import { z } from "zod";
 import Elysia from "elysia";
 import { ObjectId } from "mongodb";
 import { Equipment, EquipmentWithId } from "@/lib/gym/equipment";
+import { checkPerm, unauthorized } from "./perms";
 
 export const roomsRouter = new Elysia({ prefix: "/rooms" })
-  .get("/list", async () => {
+  .get("/list", async ({ status, request: { headers } }) => {
+    if ((await checkPerm(headers, status, { rooms: ["read"] })) === undefined)
+      return;
     const allRooms = await db.collection("rooms").find().toArray();
     // technically unsafe cast, but the MongoDB ObjectID will be casted into
     // strings after the JSON roundtrip
     return allRooms as unknown as RoomWithId[];
   })
-  .get("/:id", async ({ params: { id }, status }) => {
+  .get("/:id", async ({ params: { id }, request: { headers }, status }) => {
+    if ((await checkPerm(headers, status, { rooms: ["read"] })) === undefined)
+      return;
     const room = await db
       .collection("rooms")
       .findOne({ _id: new ObjectId(id) });
@@ -24,7 +28,17 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
   })
   .get(
     "/:id/equipments/list",
-    async ({ params: { id }, query: { offset, limit } }) => {
+    async ({
+      params: { id },
+      request: { headers },
+      query: { offset, limit },
+      status,
+    }) => {
+      if (
+        (await checkPerm(headers, status, { equipments: ["read"] })) ===
+        undefined
+      )
+        return;
       const data = await db
         .collection("equipments")
         .find({ roomId: new ObjectId(id) })
@@ -49,16 +63,16 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
   )
   .patch(
     "/update/:id",
-    async ({ params, body, status, request }) => {
-      const session = await auth.api.getSession({ headers: request.headers });
-
-      // TODO: use a proper permission system
-      if (!session || session.user.role !== "admin")
-        return status(401, {
-          message: "Unauthorized",
-        });
-      const { id } = params;
-      const { name, type, isActive } = body;
+    async ({
+      params: { id },
+      body: { name, type, isActive },
+      status,
+      request: { headers },
+    }) => {
+      if (
+        (await checkPerm(headers, status, { rooms: ["update"] })) === undefined
+      )
+        return;
       const now = new Date();
       const result = await db.collection("rooms").updateOne(
         { _id: new ObjectId(id) },
@@ -91,18 +105,15 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
       status,
       params: { id, equipmentId },
       body: { newRoomId, name, quantity, origin, warrantyUntil, isActive },
-      request,
+      request: { headers },
     }) => {
-      const session = await auth.api.getSession({ headers: request.headers });
+      if (
+        (await checkPerm(headers, status, { equipments: ["update"] })) ===
+        undefined
+      )
+        return;
 
       const roomId = newRoomId ?? id;
-
-      // TODO: use a proper permission system
-      if (!session || session.user.role !== "admin")
-        return status(401, {
-          message: "Unauthorized",
-        });
-
       const now = new Date();
 
       const result = await db.collection("equipments").updateOne(
@@ -139,13 +150,9 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
       }),
     },
   )
-  .delete("/:id", async ({ params: { id }, status, request }) => {
-    const session = await auth.api.getSession({ headers: request.headers });
-    // TODO: use a proper permission system
-    if (!session || session.user.role !== "admin")
-      return status(401, {
-        message: "Unauthorized",
-      });
+  .delete("/:id", async ({ params: { id }, status, request: { headers } }) => {
+    if ((await checkPerm(headers, status, { rooms: ["delete"] })) === undefined)
+      return;
     const result = await db
       .collection("rooms")
       .deleteOne({ _id: new ObjectId(id) });
@@ -156,13 +163,12 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
   })
   .delete(
     "/:id/equipments/:equipmentId",
-    async ({ params: { id, equipmentId }, status, request }) => {
-      const session = await auth.api.getSession({ headers: request.headers });
-      // TODO: use a proper permission system
-      if (!session || session.user.role !== "admin")
-        return status(401, {
-          message: "Unauthorized",
-        });
+    async ({ params: { id, equipmentId }, status, request: { headers } }) => {
+      if (
+        (await checkPerm(headers, status, { equipments: ["delete"] })) ===
+        undefined
+      )
+        return;
       const result = await db.collection("equipments").findOneAndDelete({
         _id: new ObjectId(equipmentId),
         roomId: new ObjectId(id),
@@ -175,16 +181,15 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
   )
   .post(
     "/create",
-    async ({ status, body, request }) => {
-      const session = await auth.api.getSession({ headers: request.headers });
-
-      // TODO: use a proper permission system
-      if (!session || session.user.role !== "admin")
-        return status(401, {
-          message: "Unauthorized",
-        });
-
-      const { name, type, isActive } = body;
+    async ({
+      status,
+      body: { name, type, isActive },
+      request: { headers },
+    }) => {
+      if (
+        (await checkPerm(headers, status, { rooms: ["create"] })) === undefined
+      )
+        return;
 
       const counter = await db
         .collection<{ _id: string; seq: number }>("counters")
@@ -226,15 +231,13 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
       status,
       params: { id },
       body: { name, quantity, origin, warrantyUntil, isActive },
-      request,
+      request: { headers },
     }) => {
-      const session = await auth.api.getSession({ headers: request.headers });
-
-      // TODO: use a proper permission system
-      if (!session || session.user.role !== "admin")
-        return status(401, {
-          message: "Unauthorized",
-        });
+      if (
+        (await checkPerm(headers, status, { equipments: ["create"] })) ===
+        undefined
+      )
+        return;
 
       const now = new Date();
 

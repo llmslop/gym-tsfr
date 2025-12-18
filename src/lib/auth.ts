@@ -1,11 +1,12 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import {
-  admin,
+  admin as adminPlugin,
   createAuthMiddleware,
   emailOTP,
   openAPI,
 } from "better-auth/plugins";
+import { ac, admin, staff, coach, user, guest } from "@/lib/perms";
 import { MongoClient, ObjectId } from "mongodb";
 import { resend } from "./resend";
 import { PasswordResetEmail } from "@/components/email/password-reset";
@@ -73,5 +74,11 @@ export const auth = betterAuth({
       }
     },
   },
-  plugins: [openAPI(), admin()],
+  plugins: [
+    openAPI(),
+    adminPlugin({
+      ac,
+      roles: { admin, user, coach, staff, guest },
+    }),
+  ],
 });

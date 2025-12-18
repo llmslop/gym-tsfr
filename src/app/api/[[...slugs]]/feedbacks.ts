@@ -8,6 +8,7 @@ import {
 import Elysia from "elysia";
 import { ObjectId } from "mongodb";
 import { z } from "zod";
+import { checkPerm, unauthorized } from "./perms";
 
 type SseClient = {
   send: () => void;
@@ -18,10 +19,12 @@ const feedbackSseClients = new Map<string, Map<string, SseClient>>();
 export const feedbacksRouter = new Elysia({ prefix: "/feedbacks" })
   .post(
     "/new",
-    async ({ body: { title, body }, status, request }) => {
-      const session = await auth.api.getSession({ headers: request.headers });
-      if (!session) return status(401, { message: "Unauthorized" });
-      const isMemberFeedback = session.user.role === "member";
+    async ({ body: { title, body }, status, request: { headers } }) => {
+      const session = await checkPerm(headers, status, {
+        feedbacks: ["create"],
+      });
+      if (!session) return;
+      const isMemberFeedback = session.user.role?.includes("user") ?? false;
       const now = new Date();
 
       const feedback = {
@@ -59,9 +62,16 @@ export const feedbacksRouter = new Elysia({ prefix: "/feedbacks" })
   )
   .post(
     "/:id/reply",
-    async ({ body: { title, body }, params: { id }, status, request }) => {
-      const session = await auth.api.getSession({ headers: request.headers });
-      if (!session) return status(401, { message: "Unauthorized" });
+    async ({
+      body: { title, body },
+      params: { id },
+      status,
+      request: { headers },
+    }) => {
+      const session = await checkPerm(headers, status, {
+        feedbacks: ["create"],
+      });
+      if (!session) return;
       const isMemberFeedback = session.user.role === "member";
       const now = new Date();
 
@@ -98,7 +108,12 @@ export const feedbacksRouter = new Elysia({ prefix: "/feedbacks" })
   )
   .get(
     "/list",
-    async ({ query: { offset, limit } }) => {
+    async ({ request: { headers }, query: { offset, limit }, status }) => {
+      if (
+        (await checkPerm(headers, status, { feedbacks: ["read"] })) ===
+        undefined
+      )
+        return;
       const data = await db
         .collection("feedbacks")
         .aggregate<FeedbackWithAuthorAndId>([
@@ -154,7 +169,11 @@ export const feedbacksRouter = new Elysia({ prefix: "/feedbacks" })
       }),
     },
   )
-  .get("/:id", async ({ params: { id } }) => {
+  .get("/:id", async ({ params: { id }, request: { headers }, status }) => {
+    if (
+      (await checkPerm(headers, status, { feedbacks: ["read"] })) === undefined
+    )
+      return;
     const feedbacks = await db
       .collection("feedbacks")
       .aggregate<FeedbackWithAuthorAndId>([
