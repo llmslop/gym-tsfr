@@ -78,7 +78,7 @@ function CreateRoomForm() {
       className="modal-box w-auto flex flex-col items-center"
       onSubmit={handleSubmit((values) => createRoom(values))}
     >
-      <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+      <fieldset className="fieldset border-base-100 rounded-box w-xs border p-4">
         <legend className="fieldset-legend">Create new room</legend>
 
         {error && (
@@ -149,7 +149,7 @@ export default function RoomsPage() {
 
   return (
     <main className="flex flex-col items-center w-full p-4">
-      <div className="card shadow-xl bg-base-200 w-full max-w-7xl flex flex-col items-center p-4">
+      <div className="card shadow-xl bg-base-100 w-full max-w-7xl flex flex-col items-center p-4">
         <div className="w-full flex items-center justify-between mb-4">
           <h1 className="flex items-center font-bold text-3xl mb-4">
             <ListBulletIcon className="size-8 mr-2 text-primary" />
@@ -180,7 +180,7 @@ export default function RoomsPage() {
           <span className="loading loading-spinner"></span>
         ) : (
           <div className="overflow-x-auto w-full">
-            <table className="table table-zebra w-full">
+            <table className="table w-full">
               <thead>
                 <tr>
                   <th>ID</th>
@@ -192,7 +192,7 @@ export default function RoomsPage() {
               </thead>
               <tbody>
                 {(rooms ?? []).map((room) => (
-                  <tr key={`room-${room._id}`} className="hover:bg-base-300">
+                  <tr key={`room-${room._id}`} className="hover:bg-base-200">
                     <th>{room.roomId}</th>
                     <td>{room.name}</td>
                     <td>{t(`roomTypes.${room.type}`)}</td>
