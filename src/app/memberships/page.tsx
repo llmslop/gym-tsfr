@@ -12,6 +12,7 @@ import PaymentForm from "@/components/memberships/PaymentForm";
 import CreatePackageForm from "@/components/memberships/CreatePackageForm";
 import UpdatePackageForm from "@/components/memberships/UpdatePackageForm";
 import DeletePackageForm from "@/components/memberships/DeletePackageForm";
+import { useToast } from "@/components/toast-context";
 
 function PricingCard({
   package: pkg,
@@ -29,9 +30,6 @@ function PricingCard({
   onDelete?: () => void;
 }) {
   const t = useTranslations("Membership");
-
-  // Debug log
-  console.log("PricingCard isAdmin prop:", isAdmin);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("vi-VN", {
@@ -53,7 +51,7 @@ function PricingCard({
       )}
       <div className="card-body">
         {/* Admin Controls */}
-        {isAdmin && (
+        {isAdmin === true && (
           <div className="absolute top-2 right-2 flex gap-2">
             <button
               className="btn btn-sm btn-ghost btn-circle"
@@ -124,7 +122,8 @@ export default function MembershipsPage() {
   const tPayment = useTranslations("Payment");
   const tManage = useTranslations("PackageManagement");
   const router = useRouter();
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  const toast = useToast();
 
   const [selectedPackage, setSelectedPackage] = useState<PackageWithId | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -133,6 +132,8 @@ export default function MembershipsPage() {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [packageToEdit, setPackageToEdit] = useState<PackageWithId | null>(null);
+  const [lastReceiptNo, setLastReceiptNo] = useState<string | null>(null);
+  const [lastMemberCode, setLastMemberCode] = useState<string | null>(null);
 
   const { data: packages, isLoading, error } = useQuery({
     queryKey: ["packages"],
@@ -140,8 +141,16 @@ export default function MembershipsPage() {
       const res = await api.packages.list.get();
       if (res.status === 200) {
         const data = res.data as PackageWithId[];
-        // Sort by duration: 1-month, 3-months, 6-months, 1-year
-        const durationOrder = { "1-month": 1, "3-months": 2, "6-months": 3, "1-year": 4 };
+        // Sort by duration (simple, UX-friendly order)
+        const durationOrder = {
+          "per-session-10": 1,
+          "1-month": 2,
+          "3-months": 3,
+          "6-months": 4,
+          "1-year": 5,
+          "vip-1-month": 6,
+          "pt-10-sessions": 7,
+        } as const;
         return data.sort((a, b) => {
           const orderA = durationOrder[a.duration as keyof typeof durationOrder] || 999;
           const orderB = durationOrder[b.duration as keyof typeof durationOrder] || 999;
@@ -152,8 +161,22 @@ export default function MembershipsPage() {
     },
   });
 
-  const hasAdminPrivilege = session?.user?.role === "admin";
-  console.log("Has admin privilege:", hasAdminPrivilege);
+  // Check if user has active membership
+  const { data: membershipData } = useQuery({
+    queryKey: ["memberships", "me"],
+    queryFn: async () => {
+      if (!session?.user) return null;
+      const res = await api.memberships.me.get();
+      if (res.status === 200) return res.data;
+      return null;
+    },
+    enabled: !!session?.user,
+  });
+
+  const hasActiveMembership = !!membershipData?.membership;
+  const hasAdminPrivilege = !isSessionPending && session?.user?.role === "admin";
+
+  console.log("hasAdminPrivilege: ", hasAdminPrivilege);
 
   const handleChoosePlan = (pkg: PackageWithId) => {
     if (!session?.user) {
@@ -167,17 +190,16 @@ export default function MembershipsPage() {
 
   const handleEdit = (pkg: PackageWithId) => {
     if (!hasAdminPrivilege) {
-      console.error("Unauthorized: Admin access required");
+      toast({ type: "error", message: "Admin access required" });
       return;
     }
-    // console.log("LOL why i got here?");
     setPackageToEdit(pkg);
     setShowUpdateModal(true);
   };
 
   const handleDelete = (pkg: PackageWithId) => {
     if (!hasAdminPrivilege) {
-      console.error("Unauthorized: Admin access required");
+      toast({ type: "error", message: "Admin access required" });
       return;
     }
     setPackageToEdit(pkg);
@@ -192,6 +214,8 @@ export default function MembershipsPage() {
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     setSelectedPackage(null);
+    setLastReceiptNo(null);
+    setLastMemberCode(null);
     router.push("/dashboard");
   };
 
@@ -221,7 +245,7 @@ export default function MembershipsPage() {
             <h1 className="text-4xl md:text-5xl font-bold">
               {t("title")}
             </h1>
-            {hasAdminPrivilege && (
+            {hasAdminPrivilege === true && (
               <button
                 className="btn btn-primary btn-circle"
                 onClick={() => setShowCreateModal(true)}
@@ -286,7 +310,7 @@ export default function MembershipsPage() {
       )}
 
       {/* Update Package Modal */}
-      {showUpdateModal && hasAdminPrivilege && packageToEdit && (
+      {showUpdateModal && hasAdminPrivilege === true && packageToEdit && (
         <dialog className="modal modal-open">
           <div className="modal-box max-w-2xl">
             <h3 className="font-bold text-lg mb-4">{tManage("editPackage")}</h3>
@@ -312,7 +336,7 @@ export default function MembershipsPage() {
       )}
 
       {/* Delete Package Modal */}
-      {showDeleteModal && hasAdminPrivilege && packageToEdit && (
+      {showDeleteModal && hasAdminPrivilege === true && packageToEdit && (
         <dialog className="modal modal-open">
           <div className="modal-box">
             <DeletePackageForm
@@ -340,15 +364,24 @@ export default function MembershipsPage() {
       {showPaymentModal && selectedPackage && (
         <dialog className="modal modal-open">
           <div className="modal-box max-w-2xl">
-            <h3 className="font-bold text-lg mb-4">{tPayment("title")}</h3>
+            <h3 className="font-bold text-lg mb-4">
+              {hasActiveMembership ? tPayment("renewTitle") || "Renew Membership" : tPayment("title")}
+            </h3>
             <PaymentForm
-              packageDuration={selectedPackage.duration}
+              packageId={selectedPackage._id}
+              packageLabel={t(`durations.${selectedPackage.duration}`)}
               packagePrice={selectedPackage.price}
+              isRenewal={hasActiveMembership}
               onClose={() => {
                 setShowPaymentModal(false);
                 setSelectedPackage(null);
               }}
-              onSuccess={handlePaymentSuccess}
+              onSuccess={({ receiptNo, memberCode }) => {
+                setLastReceiptNo(receiptNo);
+                setLastMemberCode(memberCode);
+                toast({ type: "success", message: tPayment("successTitle") });
+                handlePaymentSuccess();
+              }}
             />
           </div>
           <form method="dialog" className="modal-backdrop">
@@ -391,6 +424,22 @@ export default function MembershipsPage() {
               <p className="text-base-content/70 mb-6">
                 {tPayment("successMessage")}
               </p>
+              {(lastReceiptNo || lastMemberCode) && (
+                <div className="w-full max-w-md bg-base-200 rounded-lg p-4 text-left mb-6">
+                  {lastMemberCode && (
+                    <div className="flex justify-between">
+                      <span className="text-sm text-base-content/60">{tPayment("memberCode")}</span>
+                      <span className="font-mono">{lastMemberCode}</span>
+                    </div>
+                  )}
+                  {lastReceiptNo && (
+                    <div className="flex justify-between mt-2">
+                      <span className="text-sm text-base-content/60">{tPayment("receiptNo")}</span>
+                      <span className="font-mono">{lastReceiptNo}</span>
+                    </div>
+                  )}
+                </div>
+              )}
               <button
                 className="btn btn-primary"
                 onClick={handleCloseSuccessModal}

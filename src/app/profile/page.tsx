@@ -4,6 +4,7 @@ import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 import { AccountInfo } from "./account-info";
 import { Overview } from "./overview";
+import { MyPlan } from "./my-plan";
 import { WorkoutHistory } from "./workout-history";
 
 export default function Profile() {
@@ -39,7 +40,9 @@ export default function Profile() {
       </div>
 
       <input type="radio" name="tabs" className="tab" aria-label="My plan" />
-      <div className="tab-content bg-base-100 border-base-300 p-6">WIP</div>
+      <div className="tab-content bg-base-100 border-base-300 p-6">
+        <MyPlan />
+      </div>
 
       <input
         type="radio"

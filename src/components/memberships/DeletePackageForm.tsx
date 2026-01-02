@@ -24,7 +24,8 @@ export default function DeletePackageForm({
     mutationFn: async () => {
       const res = await api.packages({ id: pkg._id }).delete();
       if (res.status !== 200) {
-        throw new Error("Failed to delete package");
+        const errorMsg = (res as any).error?.value?.message || "Failed to delete package";
+        throw new Error(errorMsg);
       }
       return res.data;
     },
@@ -33,8 +34,9 @@ export default function DeletePackageForm({
       toast({ message: t("deleteSuccess"), type: "success" });
       onClose();
     },
-    onError: () => {
-      toast({ message: t("deleteError"), type: "error" });
+    onError: (error: Error) => {
+      const errorMessage = error.message || t("deleteError");
+      toast({ message: errorMessage, type: "error" });
     },
   });
 

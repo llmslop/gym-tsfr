@@ -65,10 +65,13 @@
     "errorLoading": "Failed to load membership plans. Please try again later.",
     "contactInfo": "Need help choosing? Contact our team for personalized recommendations!",
     "durations": {
+      "per-session-10": "10 Sessions",
       "1-month": "1 Month",
       "3-months": "3 Months",
       "6-months": "6 Months",
-      "1-year": "1 Year"
+      "1-year": "1 Year",
+      "vip-1-month": "VIP - 1 Month",
+      "pt-10-sessions": "Personal Training - 10 Sessions"
     },
     "features": {
       "access_all_facilities": "Access to all gym facilities",
@@ -119,7 +122,14 @@
   },
   "Payment": {
     "title": "Payment Details",
+    "renewTitle": "Renew Membership",
     "packageSummary": "Your selected membership plan",
+    "renewalSummary": "Extend or upgrade your membership",
+    "paymentMethod": "Payment method",
+    "methodCard": "Bank card",
+    "methodEwallet": "E-wallet",
+    "methodCash": "Cash",
+    "methodHint": "For cash payments, please complete payment at the front desk.",
     "cardInformation": "Card Information",
     "cardNumber": "Card Number",
     "cardHolder": "Card Holder Name",
@@ -136,6 +146,8 @@
     "securityNotice": "Your payment information is encrypted and secure. We never store your card details.",
     "successTitle": "Payment Successful!",
     "successMessage": "Your membership has been activated. Welcome to GymEmbrace!",
+    "memberCode": "Member code",
+    "receiptNo": "Receipt no.",
     "goToDashboard": "Go to Dashboard"
   }
 }

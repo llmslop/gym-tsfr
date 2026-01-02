@@ -1,18 +1,19 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { api } from "@/lib/eden";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PackageWithId, packageDurations } from "@/lib/gym/package";
 import { useToast } from "../toast-context";
+import { availableFeatures, featureCategories } from "@/lib/gym/features";
 
 const packageSchema = z.object({
   price: z.number().min(0, "Price must be positive"),
   isActive: z.boolean(),
-  features: z.string().min(1, "Features are required"),
+  features: z.array(z.string()).min(1, "Select at least one feature"),
 });
 
 type PackageFormData = z.infer<typeof packageSchema>;
@@ -34,31 +35,32 @@ export default function UpdatePackageForm({
   const {
     register,
     handleSubmit,
+    control,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<PackageFormData>({
     resolver: zodResolver(packageSchema),
     defaultValues: {
       price: pkg.price,
       isActive: pkg.isActive,
-      features: pkg.features.join("\n"),
+      features: pkg.features,
     },
   });
 
+  const selectedFeatures = watch("features") || [];
+
   const updateMutation = useMutation({
     mutationFn: async (data: PackageFormData) => {
-      const featuresArray = data.features
-        .split("\n")
-        .map((f) => f.trim())
-        .filter((f) => f.length > 0);
-
       const res = await api.packages({ id: pkg._id }).patch({
         price: data.price,
         isActive: data.isActive,
-        features: featuresArray,
+        features: data.features,
       });
 
       if (res.status !== 200) {
-        throw new Error("Failed to update package");
+        const errorMsg = (res as any).error?.value?.message || "Failed to update package";
+        throw new Error(errorMsg);
       }
       return res.data;
     },
@@ -67,13 +69,30 @@ export default function UpdatePackageForm({
       toast({ message: t("updateSuccess"), type: "success" });
       onSuccess();
     },
-    onError: () => {
-      toast({ message: t("updateError"), type: "error" });
+    onError: (error: Error) => {
+      const errorMessage = error.message || t("updateError");
+      toast({ message: errorMessage, type: "error" });
     },
   });
 
   const onSubmit = (data: PackageFormData) => {
     updateMutation.mutate(data);
+  };
+
+  const toggleFeature = (feature: string) => {
+    const current = selectedFeatures;
+    if (current.includes(feature)) {
+      setValue("features", current.filter((f) => f !== feature));
+    } else {
+      setValue("features", [...current, feature]);
+    }
+  };
+
+  const categoryLabels: Record<keyof typeof featureCategories, string> = {
+    access: "Access & Equipment",
+    facilities: "Facilities",
+    training: "Training Sessions",
+    benefits: "Additional Benefits",
   };
 
   return (
@@ -113,17 +132,43 @@ export default function UpdatePackageForm({
             )}
           </div>
 
-          {/* Features */}
+          {/* Features - Checkbox List */}
           <div className="form-control">
             <label className="label">
               <span className="label-text">{t("features")}</span>
-              <span className="label-text-alt">{t("featuresHint")}</span>
+              <span className="label-text-alt">
+                {selectedFeatures.length} selected
+              </span>
             </label>
-            <textarea
-              className={`textarea textarea-bordered h-32 ${errors.features ? "textarea-error" : ""}`}
-              placeholder="access_all_facilities&#10;basic_equipment&#10;locker_room"
-              {...register("features")}
-            />
+            
+            <div className="space-y-4 max-h-96 overflow-y-auto border border-base-300 rounded-lg p-4">
+              {Object.entries(featureCategories).map(([category, features]) => (
+                <div key={category} className="space-y-2">
+                  <h4 className="font-semibold text-sm text-base-content/70">
+                    {categoryLabels[category as keyof typeof featureCategories]}
+                  </h4>
+                  <div className="space-y-1 pl-2">
+                    {features.map((feature) => (
+                      <label
+                        key={feature}
+                        className="flex items-center gap-2 cursor-pointer hover:bg-base-200 p-2 rounded"
+                      >
+                        <input
+                          type="checkbox"
+                          className="checkbox checkbox-primary checkbox-sm"
+                          checked={selectedFeatures.includes(feature)}
+                          onChange={() => toggleFeature(feature)}
+                        />
+                        <span className="text-sm">
+                          {tMembership(`features.${feature}`)}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
             {errors.features && (
               <label className="label">
                 <span className="label-text-alt text-error">

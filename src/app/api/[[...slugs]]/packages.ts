@@ -50,8 +50,16 @@ export const packagesRouter = new Elysia({ prefix: "/packages" })
       .find({})
       .toArray();
 
-    // Sort by duration: 1-month, 3-months, 6-months, 1-year
-    const durationOrder = { "1-month": 1, "3-months": 2, "6-months": 3, "1-year": 4 };
+    // Sort by duration (simple, UX-friendly order)
+    const durationOrder = {
+      "per-session-10": 1,
+      "1-month": 2,
+      "3-months": 3,
+      "6-months": 4,
+      "1-year": 5,
+      "vip-1-month": 6,
+      "pt-10-sessions": 7,
+    } as const;
     const sortedPackages = packages.sort((a, b) => {
       const orderA = durationOrder[a.duration as keyof typeof durationOrder] || 999;
       const orderB = durationOrder[b.duration as keyof typeof durationOrder] || 999;

@@ -16,6 +16,7 @@ import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { roomsRouter } from "./rooms";
 import { feedbacksRouter } from "./feedbacks";
 import { eventsRouter } from "./event";
+import { membershipsRouter } from "./memberships";
 
 const app = new Elysia({ prefix: "/api" })
   .use(
@@ -32,6 +33,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(packagesRouter)
   .use(feedbacksRouter)
   .use(eventsRouter)
+  .use(membershipsRouter)
   .post(
     "/avatar/upload",
     async ({ body, request }) => {
