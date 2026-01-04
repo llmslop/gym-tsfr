@@ -233,17 +233,34 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
       const { trainerId, notes } = body;
 
       // Check active membership
-      const membership = await db
-        .collection("memberships")
-        .findOne({
-          userId: memberId,
-          status: "active",
-          expiresAt: { $gt: new Date() },
-        });
+      const now = new Date();
+      const membership = await db.collection("memberships").findOne(
+        {
+        status: "active",
+        $or: [{ userId: memberId }, { userId: session.user.id }],
+        },
+        { sort: { updatedAt: -1 } }
+      );
 
       if (!membership) {
         set.status = 400;
         return { message: "You need an active membership to request a trainer" };
+      }
+
+      if (membership.kind === "duration") {
+        if (membership.endAt && new Date(membership.endAt).getTime() <= now.getTime()) {
+          set.status = 400;
+          return { message: "Your membership has expired" };
+        }
+      }
+
+      if (membership.kind === "sessions") {
+        const used = membership.usedSessions ?? 0;
+        const total = membership.totalSessions ?? 0;
+        if (used >= total) {
+          set.status = 400;
+          return { message: "Your membership has no remaining sessions" };
+        }
       }
 
       // Check if trainer exists and is active
@@ -283,15 +300,14 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
       }
 
       // Create assignment
-      const now = new Date();
       const assignment: TrainerAssignment = {
         trainerId: trainer._id,
         memberId,
         membershipId: membership._id,
         packageId: membership.packageId,
-        startDate: now,
+        startDate: new Date(),
         endDate: null,
-        totalSessions: membership.totalSessions,
+        totalSessions: membership.totalSessions ?? 0,
         completedSessions: 0,
         status: "active",
         notes: notes || null,

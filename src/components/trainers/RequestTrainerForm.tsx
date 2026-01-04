@@ -35,7 +35,19 @@ export default function RequestTrainerForm({
   const mutation = useMutation({
     mutationFn: async (data: RequestTrainerFormData) => {
       const response = await api.trainers.request.post(data);
-      if (response.error) throw new Error(response.error.value as unknown as string);
+      if (response.error) {
+        const value = (response.error as any).value;
+        const status = (response.error as any).status as number | undefined;
+
+        const message =
+          typeof value === "string"
+            ? value
+            : value?.message
+              ? String(value.message)
+              : `Request failed${status ? ` (${status})` : ""}`;
+
+        throw new Error(message);
+      }
       return response.data;
     },
     onSuccess: () => {
