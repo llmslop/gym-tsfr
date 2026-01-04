@@ -146,7 +146,7 @@ export default function Navbar() {
                       <li>
                         <Link
                           className="btn btn-success text-success-content"
-                          href="/profile/trainer"
+                          href="/trainers/my-profile"
                         >
                           My Trainer Profile
                         </Link>

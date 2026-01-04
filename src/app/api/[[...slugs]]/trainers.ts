@@ -309,7 +309,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
         endDate: null,
         totalSessions: membership.totalSessions ?? 0,
         completedSessions: 0,
-        status: "active",
+        status: "pending",
         notes: notes || null,
         createdAt: now,
         updatedAt: now,
@@ -319,12 +319,193 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
         .collection<TrainerAssignment>("trainer_assignments")
         .insertOne(assignment);
 
-      return { message: "Trainer assignment requested successfully" };
+      return { message: "Trainer request sent. Waiting for trainer approval." };
     },
     {
       body: t.Object({
         trainerId: t.String(),
         notes: t.Optional(t.String()),
+      }),
+    }
+  )
+
+  // GET /trainers/requests/pending - Get pending trainer requests (for trainer)
+  .get("/requests/pending", async ({ set, request }) => {
+    const session = await auth.api.getSession({ headers: request.headers });
+
+    if (!session?.user?.id) {
+      set.status = 401;
+      return { message: "Unauthorized" };
+    }
+
+    const userId = new ObjectId(session.user.id);
+
+    // Get trainer profile
+    const profile = await db
+      .collection<TrainerProfile>("trainer_profiles")
+      .findOne({ userId });
+
+    if (!profile) {
+      set.status = 404;
+      return { message: "Trainer profile not found" };
+    }
+
+    // Get pending requests for this trainer
+    const requests = await db
+      .collection<TrainerAssignment>("trainer_assignments")
+      .find({ trainerId: profile._id, status: "pending" })
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    // Populate member information
+    const requestsWithMembers = await Promise.all(
+      requests.map(async (request) => {
+        const member = await db.collection("user").findOne(
+          { _id: request.memberId },
+          { projection: { name: 1, email: 1, image: 1, memberCode: 1 } }
+        );
+        return {
+          ...request,
+          member: member
+            ? {
+                id: member._id.toString(),
+                name: member.name,
+                email: member.email,
+                image: member.image,
+                memberCode: member.memberCode,
+              }
+            : null,
+        };
+      })
+    );
+
+    return requestsWithMembers;
+  })
+
+  // POST /trainers/requests/:id/accept - Accept a trainer request
+  .post("/requests/:id/accept", async ({ params, set, request }) => {
+    const session = await auth.api.getSession({ headers: request.headers });
+
+    if (!session?.user?.id) {
+      set.status = 401;
+      return { message: "Unauthorized" };
+    }
+
+    const userId = new ObjectId(session.user.id);
+
+    // Get trainer profile
+    const profile = await db
+      .collection<TrainerProfile>("trainer_profiles")
+      .findOne({ userId });
+
+    if (!profile) {
+      set.status = 404;
+      return { message: "Trainer profile not found" };
+    }
+
+    // Verify assignment belongs to this trainer and is pending
+    const assignment = await db
+      .collection<TrainerAssignment>("trainer_assignments")
+      .findOne({
+        _id: new ObjectId(params.id),
+        trainerId: profile._id,
+        status: "pending",
+      });
+
+    if (!assignment) {
+      set.status = 404;
+      return { message: "Pending request not found" };
+    }
+
+    // Check capacity
+    const activeCount = await db
+      .collection<TrainerAssignment>("trainer_assignments")
+      .countDocuments({
+        trainerId: profile._id,
+        status: "active",
+      });
+
+    if (activeCount >= profile.maxClients) {
+      set.status = 400;
+      return { message: "Maximum client capacity reached" };
+    }
+
+    // Accept request
+    await db
+      .collection<TrainerAssignment>("trainer_assignments")
+      .updateOne(
+        { _id: new ObjectId(params.id) },
+        {
+          $set: {
+            status: "active",
+            startDate: new Date(),
+            updatedAt: new Date(),
+          },
+        }
+      );
+
+    return { message: "Request accepted successfully" };
+  })
+
+  // POST /trainers/requests/:id/reject - Reject a trainer request
+  .post(
+    "/requests/:id/reject",
+    async ({ params, body, set, request }) => {
+      const session = await auth.api.getSession({ headers: request.headers });
+
+      if (!session?.user?.id) {
+        set.status = 401;
+        return { message: "Unauthorized" };
+      }
+
+      const userId = new ObjectId(session.user.id);
+
+      // Get trainer profile
+      const profile = await db
+        .collection<TrainerProfile>("trainer_profiles")
+        .findOne({ userId });
+
+      if (!profile) {
+        set.status = 404;
+        return { message: "Trainer profile not found" };
+      }
+
+      // Verify assignment belongs to this trainer and is pending
+      const assignment = await db
+        .collection<TrainerAssignment>("trainer_assignments")
+        .findOne({
+          _id: new ObjectId(params.id),
+          trainerId: profile._id,
+          status: "pending",
+        });
+
+      if (!assignment) {
+        set.status = 404;
+        return { message: "Pending request not found" };
+      }
+
+      // Reject request
+      await db
+        .collection<TrainerAssignment>("trainer_assignments")
+        .updateOne(
+          { _id: new ObjectId(params.id) },
+          {
+            $set: {
+              status: "rejected",
+              updatedAt: new Date(),
+            },
+          }
+        );
+
+      return {
+        message: body.reason
+          ? `Request rejected: ${body.reason}`
+          : "Request rejected",
+      };
+    },
+    {
+      body: t.Object({
+        reason: t.Optional(t.String()),
       }),
     }
   )
@@ -340,11 +521,14 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     const memberId = new ObjectId(session.user.id);
 
+    // Get current assignment (active, pending, or rejected)
     const assignment = await db
       .collection<TrainerAssignmentWithId>("trainer_assignments")
       .findOne({
         memberId,
-        status: "active",
+        status: { $in: ["active", "pending", "rejected"] },
+      }, {
+        sort: { createdAt: -1 } // Get most recent
       });
 
     if (!assignment) {

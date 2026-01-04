@@ -34,7 +34,7 @@ export type TrainerAssignment = {
     totalSessions: number;
     completedSessions: number;
 
-    status: "active" | "completed" | "cancelled";
+    status: "pending" | "active" | "completed" | "cancelled" | "rejected";
     notes : string | null;
 
     createdAt: Date;

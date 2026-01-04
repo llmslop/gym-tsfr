@@ -51,7 +51,10 @@ export default function RequestTrainerForm({
       return response.data;
     },
     onSuccess: () => {
-      toast({ message: "Trainer request submitted successfully!", type: "success" });
+      toast({ 
+        message: "Trainer request sent! Waiting for trainer approval.", 
+        type: "success" 
+      });
       onSuccess?.();
     },
     onError: (error: Error) => {

@@ -35,7 +35,7 @@ type TrainerAssignment = {
   endDate: string | null;
   totalSessions: number;
   completedSessions: number;
-  status: "active" | "completed" | "cancelled";
+  status: "pending" | "active" | "completed" | "cancelled" | "rejected";
   notes: string | null;
   trainer?: TrainerProfile;
   package?: Package;
@@ -120,6 +120,109 @@ export default function MyTrainerTab() {
 
         <a href="/trainers" className="btn btn-primary">
           Find a Trainer
+        </a>
+      </div>
+    );
+  }
+
+  // Show pending status
+  if (assignment.status === "pending") {
+    return (
+      <div className="space-y-6">
+        <div className="alert alert-warning">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            className="stroke-current shrink-0 w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            ></path>
+          </svg>
+          <div>
+            <h3 className="font-bold">Trainer Request Pending</h3>
+            <div className="text-sm">
+              Your trainer request has been sent. Waiting for trainer approval.
+            </div>
+          </div>
+        </div>
+
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title">Requested Trainer</h2>
+            {assignment.trainer && (
+              <div className="flex items-center gap-4 mt-4">
+                <div className="avatar">
+                  <div className="w-16 rounded-full">
+                    {assignment.trainer.user?.image ? (
+                      <img 
+                        src={assignment.trainer.user.image} 
+                        alt={assignment.trainer.user.name || "Trainer"} 
+                      />
+                    ) : (
+                      <div className="bg-neutral text-neutral-content flex items-center justify-center w-full h-full">
+                        <span className="text-xl">
+                          {assignment.trainer.user?.name?.charAt(0) || "T"}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <p className="font-semibold">{assignment.trainer.user?.name}</p>
+                  <p className="text-sm text-base-content/60">
+                    {assignment.trainer.specialization.join(", ")}
+                  </p>
+                </div>
+              </div>
+            )}
+            {assignment.notes && (
+              <div className="mt-4 p-3 bg-base-200 rounded">
+                <p className="text-sm font-medium">Your Note:</p>
+                <p className="text-sm text-base-content/70 mt-1">{assignment.notes}</p>
+              </div>
+            )}
+            <p className="text-sm text-base-content/60 mt-2">
+              Requested on: {new Date(assignment.startDate).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show rejected status
+  if (assignment.status === "rejected") {
+    return (
+      <div className="space-y-6">
+        <div className="alert alert-error">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            className="stroke-current shrink-0 w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <div>
+            <h3 className="font-bold">Request Declined</h3>
+            <div className="text-sm">
+              Your trainer request was declined. You can request another trainer.
+            </div>
+          </div>
+        </div>
+
+        <a href="/trainers" className="btn btn-primary">
+          Find Another Trainer
         </a>
       </div>
     );
