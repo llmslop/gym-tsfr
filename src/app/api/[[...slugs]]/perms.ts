@@ -31,10 +31,15 @@ export const checkPerm = async (
     },
   });
 
-  if (session === undefined) await unauthorized(status);
-  else await forbidden(status);
+  if (!hasPerm) {
+    if (session === undefined) {
+      return await unauthorized(status);
+    } else {
+      return await forbidden(status);
+    }
+  }
 
-  return hasPerm ? session : undefined;
+  return session;
 };
 
 export const unauthorized = async (status: typeof elysiaStatus) => {

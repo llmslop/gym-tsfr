@@ -1,4 +1,5 @@
 import { getUserLocale } from "@/services/locale";
+import { Locale, locales } from "@/i18n/config";
 
 type Messages = {
   API: {
@@ -14,10 +15,23 @@ const cachedMessages: { [locale: string]: Messages } = {};
  * Get messages for the current locale
  */
 export async function getMessages(): Promise<Messages> {
-  const locale = await getUserLocale();
+  const userLocale = await getUserLocale();
+  
+  // Validate locale against whitelist to prevent path traversal
+  const locale: Locale = locales.includes(userLocale as Locale) ? (userLocale as Locale) : "en";
   
   if (!cachedMessages[locale]) {
-    cachedMessages[locale] = (await import(`../../messages/${locale}.json`)).default;
+    try {
+      cachedMessages[locale] = (await import(`../../messages/${locale}.json`)).default;
+    } catch (error) {
+      console.error(`Failed to load locale file for ${locale}:`, error);
+      // Fallback to English if locale file fails to load
+      if (locale !== "en") {
+        cachedMessages[locale] = (await import(`../../messages/en.json`)).default;
+      } else {
+        throw new Error("Failed to load default locale");
+      }
+    }
   }
   
   return cachedMessages[locale];
