@@ -35,16 +35,19 @@ export default function RegisterPage({
   }>;
 }) {
   const { email, name, phone } = React.use(searchParams);
+  const t = useTranslations("Auth.register");
+  const tValidation = useTranslations("Auth.validation");
+
   const formSchema = z
     .object({
-      name: z.string().min(2, "Name must have at least 2 characters"),
-      phoneNumber: z.string().nonempty("Your phone number is required"),
-      email: z.email("Must be a valid email address").default(""),
-      password: z.string().min(8, "Password must have at least 8 characters"),
+      name: z.string().min(2, tValidation("nameMinLength")),
+      phoneNumber: z.string().nonempty(tValidation("phoneRequired")),
+      email: z.email(tValidation("emailInvalid")).default(""),
+      password: z.string().min(8, tValidation("passwordMinLength")),
       confirmPassword: z.string().default(""),
     })
     .refine((data) => data.password === data.confirmPassword, {
-      error: "Passwords do not match",
+      message: tValidation("passwordsNoMatch"),
       path: ["confirmPassword"],
     });
 
@@ -121,9 +124,9 @@ export default function RegisterPage({
         >
           <fieldset className="fieldset">
             <legend className="fieldset-legend flex flex-col items-start mb-4">
-              <h1 className="font-bold text-3xl">Register your account</h1>
+              <h1 className="font-bold text-3xl">{t("title")}</h1>
               <p className="font-medium text-base-content/70">
-                Join the community and start your fitness journey today!
+                {t("subtitle")}
               </p>
             </legend>
 
@@ -138,7 +141,7 @@ export default function RegisterPage({
                 <input
                   id="email"
                   type="email"
-                  placeholder="Your email here"
+                  placeholder={t("emailPlaceholder")}
                   className="input input-bordered w-full pl-8"
                   {...register("email")}
                 />
@@ -160,7 +163,7 @@ export default function RegisterPage({
                 <input
                   id="name"
                   type="text"
-                  placeholder="Your full name here"
+                  placeholder={t("namePlaceholder")}
                   className="input input-bordered w-full pl-8"
                   {...register("name")}
                 />
@@ -182,7 +185,7 @@ export default function RegisterPage({
                 <input
                   id="phone-number"
                   type="text"
-                  placeholder="Your phone number here"
+                  placeholder={t("phonePlaceholder")}
                   className="input input-bordered w-full pl-8"
                   {...register("phoneNumber")}
                 />
@@ -216,7 +219,7 @@ export default function RegisterPage({
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Your password here"
+                  placeholder={t("passwordPlaceholder")}
                   className="input input-bordered w-full pl-8"
                   {...register("password")}
                 />
@@ -250,7 +253,7 @@ export default function RegisterPage({
                 <input
                   id="confirm-password"
                   type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Retype your password here"
+                  placeholder={t("passwordPlaceholder")}
                   className="input input-bordered w-full pl-8"
                   {...register("confirmPassword")}
                 />
@@ -272,7 +275,7 @@ export default function RegisterPage({
           </fieldset>
           <div className="flex w-full items-center gap-4 text-base-content/50">
             <div className="h-0.5 bg-base-300 my-6 flex-1"></div>
-            <p>Or</p>
+            <p>t("or")</p>
             <div className="h-0.5 bg-base-300 my-6 flex-1"></div>
           </div>
           <div className="text-center text-sm">
