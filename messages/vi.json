@@ -371,6 +371,61 @@
     "crossfit": "CrossFit",
     "powerlifting": "Cử Tạ"
   },
+  "Profile": {
+    "tabs": {
+      "overview": "Tổng Quan",
+      "accountInfo": "Thông Tin Tài Khoản",
+      "myPlan": "Gói Của Tôi",
+      "myTrainer": "Huấn Luyện Viên",
+      "workoutHistory": "Lịch Sử Tập Luyện"
+    },
+    "overview": {
+      "memberCode": "Mã Hội Viên",
+      "bmiCategory": {
+        "underweight": "Thiếu Cân",
+        "normal": "Bình Thường",
+        "overweight": "Thừa Cân",
+        "obese": "Béo Phì"
+      }
+    },
+    "accountInfo": {
+      "personalInfo": "Thông Tin Cá Nhân",
+      "name": "Tên",
+      "phone": "Số Điện Thoại",
+      "save": "Lưu Thay Đổi",
+      "profilePicture": "Ảnh Đại Diện",
+      "changePassword": "Đổi Mật Khẩu",
+      "currentPassword": "Mật Khẩu Hiện Tại",
+      "newPassword": "Mật Khẩu Mới",
+      "confirmPassword": "Xác Nhận Mật Khẩu",
+      "updatePassword": "Cập Nhật Mật Khẩu",
+      "validation": {
+        "nameMinLength": "Tên phải có ít nhất 2 ký tự",
+        "phoneRequired": "Yêu cầu nhập số điện thoại",
+        "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+        "passwordsNoMatch": "Mật khẩu không khớp"
+      }
+    },
+    "myPlan": {
+      "title": "Gói Thành Viên Của Tôi",
+      "noMembership": "Không Có Gói Thành Viên",
+      "renewNow": "Gia Hạn Ngay"
+    },
+    "myTrainer": {
+      "title": "Huấn Luyện Viên Của Tôi",
+      "noAssignment": "Chưa Có Huấn Luyện Viên",
+      "findTrainer": "Tìm Huấn Luyện Viên",
+      "cancelConfirm": "Bạn có chắc muốn hủy phân công này không?",
+      "trainer": "Huấn Luyện Viên"
+    },
+    "workoutHistory": {
+      "title": "Lịch Sử Tập Luyện",
+      "status": {
+        "active": "Đang Hoạt Động",
+        "completed": "Hoàn Thành"
+      }
+    }
+  },
   "API": {
     "errors": {
       "unauthorized": "Không có quyền truy cập",

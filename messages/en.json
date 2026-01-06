@@ -371,6 +371,61 @@
     "crossfit": "CrossFit",
     "powerlifting": "Powerlifting"
   },
+  "Profile": {
+    "tabs": {
+      "overview": "Overview",
+      "accountInfo": "Account Info",
+      "myPlan": "My Plan",
+      "myTrainer": "My Trainer",
+      "workoutHistory": "Workout History"
+    },
+    "overview": {
+      "memberCode": "Member Code",
+      "bmiCategory": {
+        "underweight": "Underweight",
+        "normal": "Normal",
+        "overweight": "Overweight",
+        "obese": "Obese"
+      }
+    },
+    "accountInfo": {
+      "personalInfo": "Personal Information",
+      "name": "Name",
+      "phone": "Phone Number",
+      "save": "Save Changes",
+      "profilePicture": "Profile Picture",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "updatePassword": "Update Password",
+      "validation": {
+        "nameMinLength": "Name must be at least 2 characters",
+        "phoneRequired": "Phone number is required",
+        "passwordMinLength": "Password must be at least 8 characters",
+        "passwordsNoMatch": "Passwords do not match"
+      }
+    },
+    "myPlan": {
+      "title": "My Membership Plan",
+      "noMembership": "No Active Membership",
+      "renewNow": "Renew Now"
+    },
+    "myTrainer": {
+      "title": "My Trainer",
+      "noAssignment": "No Trainer Assignment",
+      "findTrainer": "Find a Trainer",
+      "cancelConfirm": "Are you sure you want to cancel this assignment?",
+      "trainer": "Trainer"
+    },
+    "workoutHistory": {
+      "title": "Workout History",
+      "status": {
+        "active": "Active",
+        "completed": "Completed"
+      }
+    }
+  },
   "API": {
     "errors": {
       "unauthorized": "Unauthorized",

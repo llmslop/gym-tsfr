@@ -110,7 +110,7 @@ function WorkoutCalendar({
                   {dayCheckIns.map((ci, idx) => {
                     const duration = ci.duration 
                       ? `${Math.floor(ci.duration / 60)}h ${ci.duration % 60}m`
-                      : "Active";
+                      : t("status.active");
                     
                     return (
                       <div

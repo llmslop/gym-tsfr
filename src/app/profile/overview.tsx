@@ -1,4 +1,5 @@
 import { authClient } from "@/lib/auth-client";
+import { useTranslations } from "next-intl";
 import { api } from "@/lib/eden";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import QRCode from "react-qr-code";
@@ -59,10 +60,10 @@ function QRCodeSection({
 }
 
 function classifyBMI(bmi: number): string {
-  if (bmi < 18.5) return "Underweight";
-  if (bmi < 25) return "Normal";
-  if (bmi < 30) return "Overweight";
-  return "Obese";
+  if (bmi < 18.5) return t("underweight");
+  if (bmi < 25) return t("normal");
+  if (bmi < 30) return t("overweight");
+  return t("obese");
 }
 
 function UserStats({ session }: { session: typeof authClient.$Infer.Session }) {
