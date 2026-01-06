@@ -321,6 +321,56 @@
     "optional": "Optional",
     "required": "Required"
   },
+  "LandingPage": {
+    "hero": {
+      "title": "Start Your Fitness Journey Today",
+      "subtitle": "Discover a gym designed around your goals. Whether you're building strength, improving your health, or simply looking for a place that keeps you motivated, our coaches, classes, and state-of-the-art equipment are here to support you every step of the way. Join a community that celebrates progress, encourages consistency, and believes in your potential.",
+      "getStarted": "Get Started"
+    },
+    "signUpForm": {
+      "email": "Email",
+      "emailPlaceholder": "Your email here",
+      "name": "Name",
+      "namePlaceholder": "Your name here",
+      "phone": "Phone Number",
+      "phonePlaceholder": "Your phone number here",
+      "signMeUp": "Sign me up!"
+    },
+    "testimonials": {
+      "title": "What Our Members Say",
+      "subtitle": "Real experiences from people who've trained, grown, and transformed with us."
+    },
+    "features": {
+      "consistency": {
+        "title": "Everything You Need To Stay Consistent",
+        "description": "From equipment to coaching, every detail is designed to help you train better, feel stronger, and stay motivated week after week. Whether you're just starting or pushing for the next level, we've built an environment that keeps you showing up."
+      },
+      "programs": {
+        "title": "Programs Built for Every Level",
+        "description": "Whether you're just starting or leveling up, our guided workout paths help you stay consistent without overthinking. Build strength, confidence, and routine — one step at a time."
+      },
+      "tracking": {
+        "title": "Track Your Progress Effortlessly",
+        "description": "Visualize your improvement with simple progress charts and habit tracking tools. Stay motivated as you watch your consistency turn into real results."
+      }
+    },
+    "finalCta": {
+      "title": "So what's stopping you?",
+      "subtitle": "Be a member of GymEmbrace and reap the benefits of being one!"
+    }
+  },
+  "Specializations": {
+    "weightLoss": "Weight Loss",
+    "muscleBuilding": "Muscle Building",
+    "athleticPerformance": "Athletic Performance",
+    "rehabilitation": "Rehabilitation",
+    "yoga": "Yoga",
+    "cardio": "Cardio",
+    "strengthTraining": "Strength Training",
+    "nutrition": "Nutrition",
+    "crossfit": "CrossFit",
+    "powerlifting": "Powerlifting"
+  },
   "API": {
     "errors": {
       "unauthorized": "Unauthorized",

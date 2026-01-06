@@ -321,6 +321,56 @@
     "optional": "Tùy chọn",
     "required": "Bắt buộc"
   },
+  "LandingPage": {
+    "hero": {
+      "title": "Bắt Đầu Hành Trình Thể Dục Của Bạn Ngay Hôm Nay",
+      "subtitle": "Khám phá phòng gym được thiết kế xung quanh mục tiêu của bạn. Dù bạn đang xây dựng sức mạnh, cải thiện sức khỏe, hay đơn giản là tìm kiếm nơi giúp bạn duy trì động lực, huấn luyện viên, lớp học và thiết bị hiện đại của chúng tôi luôn hỗ trợ bạn từng bước. Tham gia cộng đồng tôn vinh tiến bộ, khuyến khích sự kiên trì và tin vào tiềm năng của bạn.",
+      "getStarted": "Bắt Đầu"
+    },
+    "signUpForm": {
+      "email": "Email",
+      "emailPlaceholder": "Nhập email của bạn",
+      "name": "Tên",
+      "namePlaceholder": "Nhập tên của bạn",
+      "phone": "Số Điện Thoại",
+      "phonePlaceholder": "Nhập số điện thoại của bạn",
+      "signMeUp": "Đăng ký ngay!"
+    },
+    "testimonials": {
+      "title": "Khách Hàng Nói Gì Về Chúng Tôi",
+      "subtitle": "Trải nghiệm thực tế từ những người đã tập luyện, phát triển và thay đổi cùng chúng tôi."
+    },
+    "features": {
+      "consistency": {
+        "title": "Mọi Thứ Bạn Cần Để Duy Trì Thói Quen",
+        "description": "Từ thiết bị đến huấn luyện, mọi chi tiết được thiết kế để giúp bạn tập tốt hơn, cảm thấy mạnh mẽ hơn và duy trì động lực tuần này qua tuần khác. Dù bạn mới bắt đầu hay đang hướng tới cấp độ tiếp theo, chúng tôi đã xây dựng môi trường giúp bạn tiếp tục xuất hiện."
+      },
+      "programs": {
+        "title": "Chương Trình Cho Mọi Cấp Độ",
+        "description": "Dù bạn mới bắt đầu hay nâng cấp, các lộ trình tập luyện hướng dẫn của chúng tôi giúp bạn duy trì thói quen mà không cần suy nghĩ quá nhiều. Xây dựng sức mạnh, sự tự tin và thói quen — từng bước một."
+      },
+      "tracking": {
+        "title": "Theo Dõi Tiến Trình Dễ Dàng",
+        "description": "Hình dung sự cải thiện của bạn với biểu đồ tiến độ đơn giản và công cụ theo dõi thói quen. Duy trì động lực khi bạn thấy sự kiên trì của mình biến thành kết quả thực sự."
+      }
+    },
+    "finalCta": {
+      "title": "Vậy điều gì đang ngăn cản bạn?",
+      "subtitle": "Trở thành thành viên của GymEmbrace và nhận những lợi ích tuyệt vời!"
+    }
+  },
+  "Specializations": {
+    "weightLoss": "Giảm Cân",
+    "muscleBuilding": "Tăng Cơ",
+    "athleticPerformance": "Hiệu Suất Thể Thao",
+    "rehabilitation": "Phục Hồi Chức Năng",
+    "yoga": "Yoga",
+    "cardio": "Cardio",
+    "strengthTraining": "Tập Sức Mạnh",
+    "nutrition": "Dinh Dưỡng",
+    "crossfit": "CrossFit",
+    "powerlifting": "Cử Tạ"
+  },
   "API": {
     "errors": {
       "unauthorized": "Không có quyền truy cập",
