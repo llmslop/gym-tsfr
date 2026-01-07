@@ -61,13 +61,17 @@
     "popular": "Most Popular",
     "perPeriod": "per {period}",
     "choosePlan": "Choose Plan",
+    "inactive": "Inactive",
     "errorLoading": "Failed to load membership plans. Please try again later.",
     "contactInfo": "Need help choosing? Contact our team for personalized recommendations!",
     "durations": {
+      "per-session-10": "10 Sessions",
       "1-month": "1 Month",
       "3-months": "3 Months",
       "6-months": "6 Months",
-      "1-year": "1 Year"
+      "1-year": "1 Year",
+      "vip-1-month": "VIP - 1 Month",
+      "pt-10-sessions": "Personal Training - 10 Sessions"
     },
     "features": {
       "access_all_facilities": "Access to all gym facilities",
@@ -88,9 +92,44 @@
       "exclusive_events": "Access to exclusive member events"
     }
   },
+  "PackageManagement": {
+    "createNew": "Create New Package",
+    "editPackage": "Edit Package",
+    "deleteTitle": "Delete Package",
+    "deleteWarning": "Are you sure you want to delete this package? This action cannot be undone.",
+    "duration": "Duration",
+    "price": "Price (VND)",
+    "currency": "Currency",
+    "features": "Features",
+    "featuresHint": "One feature per line",
+    "isActive": "Active",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "create": "Create Package",
+    "creating": "Creating...",
+    "update": "Update Package",
+    "updating": "Updating...",
+    "confirmDelete": "Delete",
+    "deleting": "Deleting...",
+    "cancel": "Cancel",
+    "createSuccess": "Package created successfully!",
+    "createError": "Failed to create package",
+    "updateSuccess": "Package updated successfully!",
+    "updateError": "Failed to update package",
+    "deleteSuccess": "Package deleted successfully!",
+    "deleteError": "Failed to delete package"
+  },
   "Payment": {
     "title": "Payment Details",
+    "renewTitle": "Renew Membership",
     "packageSummary": "Your selected membership plan",
+    "renewalSummary": "Extend or upgrade your membership",
+    "paymentMethod": "Payment method",
+    "methodCard": "Bank card",
+    "methodEwallet": "E-wallet",
+    "methodCash": "Cash",
+    "methodHint": "For cash payments, please complete payment at the front desk.",
     "cardInformation": "Card Information",
     "cardNumber": "Card Number",
     "cardHolder": "Card Holder Name",
@@ -107,6 +146,8 @@
     "securityNotice": "Your payment information is encrypted and secure. We never store your card details.",
     "successTitle": "Payment Successful!",
     "successMessage": "Your membership has been activated. Welcome to GymEmbrace!",
+    "memberCode": "Member code",
+    "receiptNo": "Receipt no.",
     "goToDashboard": "Go to Dashboard"
   }
 }

@@ -29,6 +29,13 @@ async function sendEmail(email: string, subject: string, content: JSX.Element) {
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, { client }),
+  trustedOrigins: [
+    "http://localhost:3000",
+    ...(process.env.NEXT_PUBLIC_ALLOWED_DEV_ORIGINS ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+  ],
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,

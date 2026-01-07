@@ -9,12 +9,10 @@ import {
   BuildingOfficeIcon,
   ChartPieIcon,
   ChatBubbleLeftRightIcon,
-  CubeIcon,
-  CurrencyDollarIcon,
-  FlagIcon,
   QrCodeIcon,
   UserGroupIcon,
   UserPlusIcon,
+  Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
 import { usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
@@ -22,22 +20,23 @@ import { useRouter } from "@/i18n/navigation";
 import { HidePageChrome } from "./hide-page-chrome";
 
 export default function Navbar() {
-  const routes = [
-    ["Dashboard", "/dashboard", ChartPieIcon],
-    ["QR Scan", "/scan", QrCodeIcon],
-    ["Rooms", "/rooms", BuildingOfficeIcon],
-    ["Staff", "/staff", UserGroupIcon],
-    ["Packages", "/packages", CubeIcon],
-    ["Memberships", "/memberships", UserPlusIcon],
-    ["Feedbacks", "/feedbacks", ChatBubbleLeftRightIcon],
-    ["Purchases", "/purchases", CurrencyDollarIcon],
-    ["Reports", "/reports", FlagIcon],
-  ] satisfies [string, string, React.FC][];
-
   const pathname = usePathname();
   const { data: session, isPending: isSessionPending } =
     authClient.useSession();
   const router = useRouter();
+
+  const routes = [
+    ["Dashboard", "/dashboard", ChartPieIcon],
+    ["QR Scan", "/scan", QrCodeIcon],
+    ["Rooms", "/rooms", BuildingOfficeIcon],
+    ["Trainers", "/trainers", UserGroupIcon],
+    ["Memberships", "/memberships", UserPlusIcon],
+    ["Feedbacks", "/feedbacks", ChatBubbleLeftRightIcon],
+    ...(session?.user?.role === "admin" 
+      ? [["Admin", "/admin", Cog6ToothIcon] as [string, string, React.FC]]
+      : []
+    ),
+  ] satisfies [string, string, React.FC][];
 
   const navItems = routes.map(([name, path, RouteIcon]) => {
     const current = path.split("/")[1] === pathname.split("/")[1];
@@ -142,6 +141,16 @@ export default function Navbar() {
                         View my profile
                       </Link>
                     </li>
+                    {session.user.role === "coach" && (
+                      <li>
+                        <Link
+                          className="btn btn-success text-success-content"
+                          href="/trainers/my-profile"
+                        >
+                          My Trainer Profile
+                        </Link>
+                      </li>
+                    )}
                     <div className="h-0.5 bg-base-200 my-2 w-full"></div>
                     <li>
                       <button

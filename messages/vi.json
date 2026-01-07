@@ -61,13 +61,17 @@
     "popular": "Phổ biến nhất",
     "perPeriod": "mỗi {period}",
     "choosePlan": "Chọn gói",
+    "inactive": "Không hoạt động",
     "errorLoading": "Không thể tải các gói thành viên. Vui lòng thử lại sau.",
     "contactInfo": "Cần giúp lựa chọn? Liên hệ đội ngũ của chúng tôi để được tư vấn cá nhân hóa!",
     "durations": {
+      "per-session-10": "10 Buổi",
       "1-month": "1 Tháng",
       "3-months": "3 Tháng",
       "6-months": "6 Tháng",
-      "1-year": "1 Năm"
+      "1-year": "1 Năm",
+      "vip-1-month": "VIP - 1 Tháng",
+      "pt-10-sessions": "PT Cá Nhân - 10 Buổi"
     },
     "features": {
       "access_all_facilities": "Truy cập tất cả các phòng tập",
@@ -88,9 +92,44 @@
       "exclusive_events": "Tham gia sự kiện độc quyền"
     }
   },
+  "PackageManagement": {
+    "createNew": "Tạo Gói Mới",
+    "editPackage": "Chỉnh Sửa Gói",
+    "deleteTitle": "Xóa Gói",
+    "deleteWarning": "Bạn có chắc chắn muốn xóa gói này? Hành động này không thể hoàn tác.",
+    "duration": "Thời Hạn",
+    "price": "Giá (VNĐ)",
+    "currency": "Tiền Tệ",
+    "features": "Tính Năng",
+    "featuresHint": "Mỗi tính năng một dòng",
+    "isActive": "Đang Hoạt Động",
+    "status": "Trạng Thái",
+    "active": "Hoạt Động",
+    "inactive": "Không Hoạt Động",
+    "create": "Tạo Gói",
+    "creating": "Đang tạo...",
+    "update": "Cập Nhật Gói",
+    "updating": "Đang cập nhật...",
+    "confirmDelete": "Xóa",
+    "deleting": "Đang xóa...",
+    "cancel": "Hủy",
+    "createSuccess": "Tạo gói thành công!",
+    "createError": "Không thể tạo gói",
+    "updateSuccess": "Cập nhật gói thành công!",
+    "updateError": "Không thể cập nhật gói",
+    "deleteSuccess": "Xóa gói thành công!",
+    "deleteError": "Không thể xóa gói"
+  },
   "Payment": {
     "title": "Chi Tiết Thanh Toán",
+    "renewTitle": "Gia Hạn Thành Viên",
     "packageSummary": "Gói thành viên bạn đã chọn",
+    "renewalSummary": "Gia hạn hoặc nâng cấp gói thành viên",
+    "paymentMethod": "Phương thức thanh toán",
+    "methodCard": "Thẻ ngân hàng",
+    "methodEwallet": "Ví điện tử",
+    "methodCash": "Tiền mặt",
+    "methodHint": "Nếu chọn tiền mặt, vui lòng thanh toán tại quầy lễ tân.",
     "cardInformation": "Thông Tin Thẻ",
     "cardNumber": "Số Thẻ",
     "cardHolder": "Tên Chủ Thẻ",
@@ -107,6 +146,8 @@
     "securityNotice": "Thông tin thanh toán của bạn được mã hóa và bảo mật. Chúng tôi không bao giờ lưu trữ thông tin thẻ của bạn.",
     "successTitle": "Thanh Toán Thành Công!",
     "successMessage": "Thành viên của bạn đã được kích hoạt. Chào mừng đến với GymEmbrace!",
+    "memberCode": "Mã hội viên",
+    "receiptNo": "Mã biên lai",
     "goToDashboard": "Về Trang Chính"
   }
 }

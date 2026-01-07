@@ -4,7 +4,9 @@ import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth-client";
 import { AccountInfo } from "./account-info";
 import { Overview } from "./overview";
+import { MyPlan } from "./my-plan";
 import { WorkoutHistory } from "./workout-history";
+import MyTrainerTab from "./my-trainer";
 
 export default function Profile() {
   const { data: session, isPending } = authClient.useSession();
@@ -39,7 +41,9 @@ export default function Profile() {
       </div>
 
       <input type="radio" name="tabs" className="tab" aria-label="My plan" />
-      <div className="tab-content bg-base-100 border-base-300 p-6">WIP</div>
+      <div className="tab-content bg-base-100 border-base-300 p-6">
+        <MyPlan />
+      </div>
 
       <input
         type="radio"
@@ -49,6 +53,11 @@ export default function Profile() {
       />
       <div className="tab-content bg-base-100 border-base-300 p-6">
         <WorkoutHistory session={session!} />
+      </div>
+
+      <input type="radio" name="tabs" className="tab" aria-label="My Trainer" />
+      <div className="tab-content bg-base-100 border-base-300 p-6">
+        <MyTrainerTab />
       </div>
 
       <input type="radio" name="tabs" className="tab" aria-label="Billing" />
