@@ -69,6 +69,7 @@ export default function RegisterPage({
 
   const router = useRouter();
   const toast = useToast();
+  const [_, setPendingEmail] = useSessionStorage("pendingEmail", "");
 
   const { mutate: onSubmit, isPending } = useMutation({
     mutationFn: async (formData: z.infer<typeof formSchema>) => {
@@ -80,6 +81,7 @@ export default function RegisterPage({
         callbackURL: "/auth/login",
       });
       if (error) throw new Error(error.message);
+      setPendingEmail(formData.email);
     },
     onSuccess: () => router.push("/auth/register-done"),
     onError: (error) => {
