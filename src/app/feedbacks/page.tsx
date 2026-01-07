@@ -4,10 +4,11 @@ import { Link } from "@/i18n/navigation";
 import { api } from "@/lib/eden";
 import { ChatBubbleLeftRightIcon, PlusIcon } from "@heroicons/react/24/solid";
 import { useQuery } from "@tanstack/react-query";
-import { useFormatter } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 export default function FeedbacksPage() {
   const limit = 5;
+  const t = useTranslations("Feedbacks");
   const { data: feedbacks } = useQuery({
     queryKey: ["feedbacks"],
     queryFn: async () => {
@@ -26,13 +27,13 @@ export default function FeedbacksPage() {
         <div className="w-full flex items-center justify-between mb-4">
           <h1 className="flex items-center font-bold text-3xl mb-4">
             <ChatBubbleLeftRightIcon className="size-8 mr-2 text-primary" />
-            Feedbacks
+            {t("title")}
           </h1>
 
           <div className="flex items-center justify-end mb-4">
             <Link href="/feedbacks/new" className="btn btn-primary font-bold">
               <PlusIcon className="size-4" />
-              Create new
+              {t("createNew")}
             </Link>
           </div>
         </div>
@@ -78,7 +79,7 @@ export default function FeedbacksPage() {
                 </div>
                 <div className="list-col-grow">
                   <div className="text-lg">
-                    {feedback.title ?? "No title - Reol"}
+                    {feedback.title ?? t("noTitle")}
                   </div>
                   <div className="text-sm uppercase font-semibold opacity-60">
                     From {feedback.author.name}

@@ -377,8 +377,10 @@
       "accountInfo": "Account Info",
       "myPlan": "My Plan",
       "myTrainer": "My Trainer",
-      "workoutHistory": "Workout History"
+      "workoutHistory": "Workout History",
+      "billing": "Billing"
     },
+    "underConstruction": "This page is under construction.",
     "overview": {
       "memberCode": "Member Code",
       "bmiCategory": {
@@ -425,6 +427,23 @@
         "completed": "Completed"
       }
     }
+  },
+  "Feedbacks": {
+    "title": "Feedbacks",
+    "createNew": "Create new",
+    "noTitle": "No title - Reol"
+  },
+  "Rooms": {
+    "title": "Rooms",
+    "createNew": "Create new",
+    "createNewRoom": "Create new room",
+    "name": "Name",
+    "nameRequired": "Name is required",
+    "type": "Type",
+    "isActive": "Active",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete"
   },
   "API": {
     "errors": {

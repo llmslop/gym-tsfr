@@ -377,8 +377,10 @@
       "accountInfo": "Thông Tin Tài Khoản",
       "myPlan": "Gói Của Tôi",
       "myTrainer": "Huấn Luyện Viên",
-      "workoutHistory": "Lịch Sử Tập Luyện"
+      "workoutHistory": "Lịch Sử Tập Luyện",
+      "billing": "Thanh Toán"
     },
+    "underConstruction": "Trang này đang được xây dựng.",
     "overview": {
       "memberCode": "Mã Hội Viên",
       "bmiCategory": {
@@ -425,6 +427,23 @@
         "completed": "Hoàn Thành"
       }
     }
+  },
+  "Feedbacks": {
+    "title": "Phản Hồi",
+    "createNew": "Tạo mới",
+    "noTitle": "Không có tiêu đề - Reol"
+  },
+  "Rooms": {
+    "title": "Phòng Tập",
+    "createNew": "Tạo mới",
+    "createNewRoom": "Tạo phòng mới",
+    "name": "Tên",
+    "nameRequired": "Yêu cầu nhập tên",
+    "type": "Loại",
+    "isActive": "Hoạt động",
+    "create": "Tạo",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa"
   },
   "API": {
     "errors": {
