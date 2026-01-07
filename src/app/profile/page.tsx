@@ -7,10 +7,13 @@ import { Overview } from "./overview";
 import { MyPlan } from "./my-plan";
 import { WorkoutHistory } from "./workout-history";
 import MyTrainerTab from "./my-trainer";
+import { useTranslations } from "next-intl";
 
 export default function Profile() {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
+  const t = useTranslations("Profile.tabs");
+  const tProfile = useTranslations("Profile");
 
   if (!isPending && session === null) {
     router.push("/");
@@ -23,7 +26,7 @@ export default function Profile() {
         type="radio"
         name="tabs"
         className="tab"
-        aria-label="Overview"
+        aria-label={t("overview")}
         defaultChecked={true}
       />
       <div className="tab-content bg-base-100 border-base-300 p-6">
@@ -34,13 +37,13 @@ export default function Profile() {
         type="radio"
         name="tabs"
         className="tab"
-        aria-label="Account info"
+        aria-label={t("accountInfo")}
       />
       <div className="tab-content bg-base-100 border-base-300 p-6">
         <AccountInfo session={session!} />
       </div>
 
-      <input type="radio" name="tabs" className="tab" aria-label="My plan" />
+      <input type="radio" name="tabs" className="tab" aria-label={t("myPlan")} />
       <div className="tab-content bg-base-100 border-base-300 p-6">
         <MyPlan />
       </div>
@@ -49,20 +52,20 @@ export default function Profile() {
         type="radio"
         name="tabs"
         className="tab"
-        aria-label="Workout history"
+        aria-label={t("workoutHistory")}
       />
       <div className="tab-content bg-base-100 border-base-300 p-6">
         <WorkoutHistory session={session!} />
       </div>
 
-      <input type="radio" name="tabs" className="tab" aria-label="My Trainer" />
+      <input type="radio" name="tabs" className="tab" aria-label={t("myTrainer")} />
       <div className="tab-content bg-base-100 border-base-300 p-6">
         <MyTrainerTab />
       </div>
 
-      <input type="radio" name="tabs" className="tab" aria-label="Billing" />
+      <input type="radio" name="tabs" className="tab" aria-label={t("billing")} />
       <div className="tab-content bg-base-100 border-base-300 p-6">
-        This page is under construction.
+        {tProfile("underConstruction")}
       </div>
     </main>
   ) : (

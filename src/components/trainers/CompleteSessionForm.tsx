@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm, useFieldArray } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "@/lib/eden";
 import { useToast } from "@/components/toast-context";
@@ -19,6 +20,7 @@ type CompleteSessionFormData = {
 };
 
 export default function CompleteSessionForm({
+  const t = useTranslations("Trainers.completeSession");
   sessionId,
   initialExercises,
   onSuccess,
@@ -76,7 +78,7 @@ export default function CompleteSessionForm({
         </label>
         <textarea
           {...register("trainerNotes", {
-            required: "Please provide session notes",
+            required: t("sessionNotesRequired"),
           })}
           className="textarea textarea-bordered h-32"
           placeholder="How did the session go? Any observations or recommendations?"
@@ -112,7 +114,7 @@ export default function CompleteSessionForm({
                 <input
                   type="number"
                   {...register(`exercises.${index}.sets`, {
-                    required: "Required",
+                    required: t("required"),
                     min: 0,
                   })}
                   className="input input-bordered"
@@ -126,7 +128,7 @@ export default function CompleteSessionForm({
                 <input
                   type="number"
                   {...register(`exercises.${index}.reps`, {
-                    required: "Required",
+                    required: t("required"),
                     min: 0,
                   })}
                   className="input input-bordered"
@@ -152,7 +154,7 @@ export default function CompleteSessionForm({
                 <input
                   {...register(`exercises.${index}.notes`)}
                   className="input input-bordered"
-                  placeholder="Form issues, difficulty, etc."
+                  placeholder={t("performanceNotesPlaceholder")}
                 />
               </div>
             </div>
@@ -170,7 +172,7 @@ export default function CompleteSessionForm({
           {mutation.isPending ? (
             <span className="loading loading-spinner"></span>
           ) : (
-            "Complete Session"
+            t("completeSession")
           )}
         </button>
       </div>

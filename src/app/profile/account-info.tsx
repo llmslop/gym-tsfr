@@ -4,6 +4,7 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import {
   QueryClient,
   QueryClientProvider,
@@ -23,8 +24,8 @@ function GeneralInformation({
   session: typeof authClient.$Infer.Session;
 }) {
   const generalInfoSchema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    phoneNumber: z.string().nonempty("Phone number is required"),
+    name: z.string().min(2, tValidation("nameMinLength")),
+    phoneNumber: z.string().nonempty(tValidation("phoneRequired")),
     occupation: z.string().optional(),
     birthday: z
       .string()
@@ -242,11 +243,11 @@ function UpdatePassword() {
   const updatePasswordSchema = z
     .object({
       currentPassword: z.string().nonempty(),
-      newPassword: z.string().min(8, "Password must be at least 8 characters"),
+      newPassword: z.string().min(8, tValidation("passwordMinLength")),
       confirmNewPassword: z.string(),
     })
     .refine((data) => data.newPassword === data.confirmNewPassword, {
-      message: "Passwords do not match",
+      message: tValidation("passwordsNoMatch"),
       path: ["confirmNewPassword"],
     });
 

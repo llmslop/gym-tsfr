@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "@/lib/eden";
 import { useToast } from "@/components/toast-context";
@@ -11,6 +12,7 @@ type RequestTrainerFormData = {
 };
 
 export default function RequestTrainerForm({
+  const t = useTranslations("Trainers.requestTrainer");
   trainerId,
   trainerName,
   onSuccess,
@@ -95,7 +97,7 @@ export default function RequestTrainerForm({
         <textarea
           {...register("notes")}
           className="textarea textarea-bordered h-24"
-          placeholder="Tell the trainer about your fitness goals..."
+          placeholder={t("notesPlaceholder")}
         />
       </div>
 

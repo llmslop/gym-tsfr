@@ -24,10 +24,11 @@ import { useToast } from "@/components/toast-context";
 
 function CreateRoomForm() {
   const t = useTranslations("Room");
+  const tRooms = useTranslations("Rooms");
   const router = useRouter();
 
   const schema = z.object({
-    name: z.string().min(1, "Name is required"),
+    name: z.string().min(1, tRooms("nameRequired")),
     type: z.enum(roomTypes),
     isActive: z.boolean(),
   });
@@ -79,14 +80,14 @@ function CreateRoomForm() {
       onSubmit={handleSubmit((values) => createRoom(values))}
     >
       <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-        <legend className="fieldset-legend">Create new room</legend>
+        <legend className="fieldset-legend">{tRooms("createNewRoom")}</legend>
 
         {error && (
           <span className="text-error text-center mb-2">{error.message}</span>
         )}
 
         <label className="label" htmlFor="roomform-name">
-          Name
+          {tRooms("name")}
         </label>
         <input
           id="roomform-name"
@@ -97,7 +98,7 @@ function CreateRoomForm() {
         {errors.name && <p className="text-error">{errors.name.message}</p>}
 
         <label className="label" htmlFor="roomform-type">
-          Type
+          {tRooms("type")}
         </label>
         <select id="roomform-type" className="select" {...register("type")}>
           <option disabled={true}>Pick the corresponding room type</option>
@@ -115,11 +116,11 @@ function CreateRoomForm() {
             className="checkbox"
             {...register("isActive")}
           />
-          Currently active
+          {tRooms("isActive")}
         </label>
 
         <button className="btn btn-primary" type="submit" disabled={isPending}>
-          Create
+          {tRooms("create")}
         </button>
       </fieldset>
     </form>
@@ -131,6 +132,7 @@ export default function RoomsPage() {
   const updateDialogRef = useRef<HTMLDialogElement | null>(null);
   const deleteDialogRef = useRef<HTMLDialogElement | null>(null);
   const t = useTranslations("Room");
+  const tRooms = useTranslations("Rooms");
 
   const { data: rooms, isPending } = useQuery({
     queryKey: ["rooms"],
@@ -153,7 +155,7 @@ export default function RoomsPage() {
         <div className="w-full flex items-center justify-between mb-4">
           <h1 className="flex items-center font-bold text-3xl mb-4">
             <ListBulletIcon className="size-8 mr-2 text-primary" />
-            Managed rooms
+            {tRooms("title")}
           </h1>
 
           <div className="flex items-center justify-end mb-4">
@@ -164,7 +166,7 @@ export default function RoomsPage() {
               className="btn btn-primary font-bold"
             >
               <PlusIcon className="size-4" />
-              Create new
+              {tRooms("createNew")}
             </button>
 
             <dialog ref={createDialogRef} className="modal">

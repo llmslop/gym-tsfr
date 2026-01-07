@@ -4,22 +4,24 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/eden";
 import TrainerCard from "@/components/trainers/TrainerCard";
 import { useState } from "react";
-
-const SPECIALIZATIONS = [
-  "Weight Loss",
-  "Muscle Building",
-  "Athletic Performance",
-  "Rehabilitation",
-  "Yoga",
-  "Cardio",
-  "Strength Training",
-  "Nutrition",
-  "CrossFit",
-  "Powerlifting",
-];
+import { useTranslations } from "next-intl";
 
 export default function TrainersPage() {
+  const t = useTranslations("Specializations");
   const [filter, setFilter] = useState<string>("");
+
+  const SPECIALIZATIONS = [
+    { key: "weightLoss", value: "Weight Loss" },
+    { key: "muscleBuilding", value: "Muscle Building" },
+    { key: "athleticPerformance", value: "Athletic Performance" },
+    { key: "rehabilitation", value: "Rehabilitation" },
+    { key: "yoga", value: "Yoga" },
+    { key: "cardio", value: "Cardio" },
+    { key: "strengthTraining", value: "Strength Training" },
+    { key: "nutrition", value: "Nutrition" },
+    { key: "crossfit", value: "CrossFit" },
+    { key: "powerlifting", value: "Powerlifting" },
+  ];
 
   const { data: trainers, isLoading } = useQuery({
     queryKey: ["trainers", filter],
@@ -54,8 +56,8 @@ export default function TrainersPage() {
         >
           <option value="">All Trainers</option>
           {SPECIALIZATIONS.map((spec) => (
-            <option key={spec} value={spec}>
-              {spec}
+            <option key={spec.key} value={spec.value}>
+              {t(spec.key)}
             </option>
           ))}
         </select>

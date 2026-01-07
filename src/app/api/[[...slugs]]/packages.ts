@@ -3,6 +3,7 @@ import { defaultPackages, packageDurations } from "@/lib/gym/package";
 import { db } from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { auth } from "@/lib/auth";
+import { t as translate } from "@/lib/i18n-server";
 
 const PACKAGES_COLLECTION = "packages";
 
@@ -28,7 +29,7 @@ async function requireAdmin(request: Request) {
   });
 
   if (!session?.user) {
-    throw new Error("Unauthorized");
+    throw new Error(await translate("API.errors.unauthorized"));
   }
 
   const user = await db
@@ -36,7 +37,7 @@ async function requireAdmin(request: Request) {
     .findOne({ _id: new ObjectId(session.user.id) });
 
   if (user?.role !== "admin") {
-    throw new Error("Forbidden: Admin access required");
+    throw new Error(await translate("API.errors.forbidden"));
   }
 
   return session;
@@ -132,7 +133,7 @@ export const packagesRouter = new Elysia({ prefix: "/packages" })
         );
 
       if (!result) {
-        throw new Error("Package not found");
+        throw new Error(await translate("API.errors.packageNotFound"));
       }
 
       return {
@@ -156,8 +157,8 @@ export const packagesRouter = new Elysia({ prefix: "/packages" })
       .deleteOne({ _id: new ObjectId(params.id) });
 
     if (result.deletedCount === 0) {
-      throw new Error("Package not found");
+      throw new Error(await translate("API.errors.packageNotFound"));
     }
 
-    return { success: true, message: "Package deleted successfully" };
+    return { success: true, message: await translate("API.success.packageDeleted") };
   });

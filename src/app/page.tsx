@@ -50,36 +50,37 @@ function Testimony({
 
 function SignUpForm() {
   const router = useRouter();
+  const t = useTranslations("LandingPage.signUpForm");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
 
   return (
     <fieldset className="fieldset">
-      <label htmlFor="sign-up-email">Email</label>
+      <label htmlFor="sign-up-email">{t("email")}</label>
       <input
         id="sign-up-email"
         type="email"
         className="input"
-        placeholder="Your email here"
+        placeholder={t("emailPlaceholder")}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <label htmlFor="sign-up-name">Name</label>
+      <label htmlFor="sign-up-name">{t("name")}</label>
       <input
         id="sign-up-name"
         type="text"
         className="input"
-        placeholder="Your name here"
+        placeholder={t("namePlaceholder")}
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
-      <label htmlFor="sign-up-phone">Phone Number</label>
+      <label htmlFor="sign-up-phone">{t("phone")}</label>
       <input
         id="sign-up-phone"
         type="text"
         className="input"
-        placeholder="Your phone number here"
+        placeholder={t("phonePlaceholder")}
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
       />
@@ -94,13 +95,17 @@ function SignUpForm() {
         }}
         className="btn btn-primary mt-4"
       >
-        Sign me up!
+        {t("signMeUp")}
       </button>
     </fieldset>
   );
 }
 
 export default function Dashboard() {
+  const tHero = useTranslations("LandingPage.hero");
+  const tTestimonials = useTranslations("LandingPage.testimonials");
+  const tFeatures = useTranslations("LandingPage.features");
+  const tFinalCta = useTranslations("LandingPage.finalCta");
   return (
     <main className="flex flex-col items-center">
       <section
@@ -113,18 +118,13 @@ export default function Dashboard() {
         <div className="hero-content text-neutral-content text-center backdrop-brightness-75 backdrop-blur-xs rounded-4xl">
           <div className="max-w-2xl">
             <div className="mb-5 text-4xl font-bold">
-              Start Your Fitness Journey Today
+              {tHero("title")}
             </div>
             <p className="mb-5">
-              Discover a gym designed around your goals. Whether you{"'"}re
-              building strength, improving your health, or simply looking for a
-              place that keeps you motivated, our coaches, classes, and
-              state-of-the-art equipment are here to support you every step of
-              the way. Join a community that celebrates progress, encourages
-              consistency, and believes in your potential.
+              {tHero("subtitle")}
             </p>
             <Link href="/auth/register" className="btn btn-primary">
-              Get Started
+              {tHero("getStarted")}
             </Link>
           </div>
         </div>
@@ -133,11 +133,11 @@ export default function Dashboard() {
       <section className="flex flex-col m-4 px-8 py-20 max-w-[min(100vw,90rem)]">
         <div className="mt-4">
           <h1 className="text-3xl font-bold space-y-0.5 max-w-3xl text-base-content">
-            What Our Members Say
+            {tTestimonials("title")}
           </h1>
           <p className="text-base-content/70">
             Real experiences from people who’ve trained, grown, and transformed
-            with us.
+            
           </p>
         </div>
         <div className="carousel gap-4 p-4 m-4">
@@ -225,7 +225,7 @@ export default function Dashboard() {
           />
           <div className="flex flex-col gap-8">
             <h2 className="text-3xl lg:text-5xl font-bold">
-              Everything You Need To Stay Consistent
+              {tFeatures("consistency.title")}
             </h2>
             <p className="text-xl text-base-content/50">
               From equipment to coaching, every detail is designed to help you
@@ -248,7 +248,7 @@ export default function Dashboard() {
           />
           <div className="flex flex-col gap-8">
             <h2 className="text-3xl lg:text-5xl font-bold">
-              Programs Built for Every Level
+              {tFeatures("programs.title")}
             </h2>
             <p className="text-xl text-base-content/50">
               Whether you’re just starting or leveling up, our guided workout
@@ -270,7 +270,7 @@ export default function Dashboard() {
           />
           <div className="flex flex-col gap-8">
             <h2 className="text-3xl lg:text-5xl font-bold">
-              Track Your Progress Effortlessly
+              {tFeatures("tracking.title")}
             </h2>
             <p className="text-xl text-base-content/50">
               Visualize your improvement with simple progress charts and habit
@@ -288,10 +288,10 @@ export default function Dashboard() {
         <div className="hero-overlay w-full h-full backdrop-brightness-75 backdrop-blur-xs"></div>
         <div className="hero-content flex-col">
           <h2 className="text-3xl font-bold text-neutral-content">
-            So what's stopping you?
+            {tFinalCta("title")}
           </h2>
           <h3 className="text-2xl font-semibold text-neutral-content/80 mb-4">
-            Be a member of <i>GymEmbrace</i> and reap the benefits of being one!
+            {tFinalCta("subtitle")}
           </h3>
 
           <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow 2xl text-base-content">

@@ -8,11 +8,14 @@ import z from "zod";
 import { authClient } from "@/lib/auth-client";
 import Logo from "@/components/logo";
 import { useToast } from "@/components/toast-context";
+import { useTranslations } from "next-intl";
 import { useMutation } from "@tanstack/react-query";
 
 export default function LoginPage() {
+  const t = useTranslations("Auth.forgotPassword");
+  const tValidation = useTranslations("Auth.validation");
   const formSchema = z.object({
-    email: z.email("Must be a valid email address").default(""),
+    email: z.email(tValidation("emailInvalid")).default(""),
   });
 
   const {
@@ -59,9 +62,9 @@ export default function LoginPage() {
         >
           <fieldset className="fieldset">
             <legend className="fieldset-legend flex flex-col items-start mb-4">
-              <h1 className="font-bold text-3xl">Having trouble?</h1>
+              <h1 className="font-bold text-3xl">{t("title")}</h1>
               <p className="font-medium text-base-content/70">
-                Enter your email address to reset your password.
+                {t("subtitle")}
               </p>
             </legend>
 
@@ -76,7 +79,7 @@ export default function LoginPage() {
                 <input
                   id="email"
                   type="email"
-                  placeholder="Your email here"
+                  placeholder={t("emailPlaceholder")}
                   className="input input-bordered w-full pl-8"
                   {...register("email")}
                 />

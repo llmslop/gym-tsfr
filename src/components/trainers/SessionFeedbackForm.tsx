@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "@/lib/eden";
 import { useToast } from "@/components/toast-context";
@@ -11,6 +12,7 @@ type SessionFeedbackFormData = {
 };
 
 export default function SessionFeedbackForm({
+  const t = useTranslations("Trainers.sessionFeedback");
   sessionId,
   trainerName,
   onSuccess,
@@ -79,7 +81,7 @@ export default function SessionFeedbackForm({
             <input
               key={star}
               type="radio"
-              {...register("memberRating", { required: "Rating is required" })}
+              {...register("memberRating", { required: t("ratingRequired") })}
               value={star}
               className="mask mask-star-2 bg-orange-400"
               onClick={() => setValue("memberRating", star)}
@@ -111,10 +113,10 @@ export default function SessionFeedbackForm({
         </label>
         <textarea
           {...register("memberFeedback", {
-            required: "Please provide feedback",
+            required: t("feedbackRequired"),
           })}
           className="textarea textarea-bordered h-32"
-          placeholder="Share your experience with this training session..."
+          placeholder={t("feedbackPlaceholder")}
         />
         {errors.memberFeedback && (
           <label className="label">
@@ -135,7 +137,7 @@ export default function SessionFeedbackForm({
           {mutation.isPending ? (
             <span className="loading loading-spinner"></span>
           ) : (
-            "Submit Feedback"
+            t("submitFeedback")
           )}
         </button>
       </div>

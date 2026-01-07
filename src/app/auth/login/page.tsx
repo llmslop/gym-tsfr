@@ -16,13 +16,17 @@ import { authClient } from "@/lib/auth-client";
 import Logo from "@/components/logo";
 import { useToast } from "@/components/toast-context";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
+  const t = useTranslations("Auth.login");
+  const tValidation = useTranslations("Auth.validation");
+
   const formSchema = z.object({
-    email: z.email("Must be a valid email address").default(""),
+    email: z.email(tValidation("emailInvalid")).default(""),
     password: z
       .string()
-      .min(8, "Password must have at least 8 characters")
+      .min(8, tValidation("passwordMinLength"))
       .default(""),
   });
 
@@ -71,14 +75,14 @@ export default function LoginPage() {
         >
           <fieldset className="fieldset">
             <legend className="fieldset-legend flex flex-col items-start mb-4">
-              <h1 className="font-bold text-3xl">Welcome back!</h1>
+              <h1 className="font-bold text-3xl">{t("title")}</h1>
               <p className="font-medium text-base-content/70">
-                Please log in to your account to proceed.
+                {t("subtitle")}
               </p>
             </legend>
 
             <label htmlFor="email" className="font-bold">
-              Email
+              {t("email")}
             </label>
             <div className="mb-4 w-full">
               <div className="relative w-full mb-2">
@@ -88,7 +92,7 @@ export default function LoginPage() {
                 <input
                   id="email"
                   type="email"
-                  placeholder="Your email here"
+                  placeholder={t("emailPlaceholder")}
                   className="input input-bordered w-full pl-8"
                   {...register("email")}
                 />
@@ -101,11 +105,11 @@ export default function LoginPage() {
 
             <div className="flex items-center justify-between">
               <label htmlFor="password" className="font-bold">
-                Password
+                {t("password")}
               </label>
 
               <Link className="link link-primary" href="/auth/forgot-password">
-                Forgot password?
+                {t("forgotPassword")}
               </Link>
             </div>
             <div className="mb-4 w-full">
@@ -128,7 +132,7 @@ export default function LoginPage() {
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Your password here"
+                  placeholder={t("passwordPlaceholder")}
                   className="input input-bordered w-full pl-8"
                   {...register("password")}
                 />
@@ -144,19 +148,19 @@ export default function LoginPage() {
               disabled={isPending}
               className="btn btn-primary w-full mt-4 shadow-2xl"
             >
-              Sign in
+              {t("signIn")}
               <ArrowRightEndOnRectangleIcon className="size-6" />
             </button>
           </fieldset>
           <div className="flex w-full items-center gap-4 text-base-content/50">
             <div className="h-0.5 bg-base-300 my-6 flex-1"></div>
-            <p>Or</p>
+            <p>{t("or")}</p>
             <div className="h-0.5 bg-base-300 my-6 flex-1"></div>
           </div>
           <div className="text-center text-sm">
-            Doesn't have an account?{" "}
+            {t("noAccount")}{" "}
             <Link className="link link-primary" href="/auth/register">
-              Sign up today!
+              {t("signUpToday")}
             </Link>
           </div>
           <div className="text-center text-xs mt-4 text-base-content/50">

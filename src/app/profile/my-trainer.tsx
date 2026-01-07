@@ -3,6 +3,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { api } from "@/lib/eden";
 import { useToast } from "@/components/toast-context";
+import { useTranslations } from "next-intl";
 
 type TrainerUser = {
   _id: string;
@@ -55,6 +56,7 @@ type TrainingSession = {
 
 export default function MyTrainerTab() {
   const toast = useToast();
+  const t = useTranslations("Profile.myTrainer");
   
   const { data: assignment, isLoading, refetch } = useQuery<TrainerAssignment | null>({
     queryKey: ["my-trainer-assignment"],
@@ -161,7 +163,7 @@ export default function MyTrainerTab() {
                     {assignment.trainer.user?.image ? (
                       <img 
                         src={assignment.trainer.user.image} 
-                        alt={assignment.trainer.user.name || "Trainer"} 
+                        alt={assignment.trainer.user.name || t("trainer")} 
                       />
                     ) : (
                       <div className="bg-neutral text-neutral-content flex items-center justify-center w-full h-full">
@@ -244,7 +246,7 @@ export default function MyTrainerTab() {
             <div className="avatar">
               <div className="w-20 rounded-full">
                 {trainer?.user?.image ? (
-                  <img src={trainer.user.image} alt={trainer.user.name || "Trainer"} />
+                  <img src={trainer.user.image} alt={trainer.user.name || t("trainer")} />
                 ) : (
                   <div className="bg-neutral text-neutral-content flex items-center justify-center w-full h-full">
                     <span className="text-2xl">
@@ -257,7 +259,7 @@ export default function MyTrainerTab() {
 
             <div className="flex-1">
               <h3 className="text-xl font-bold">
-                {trainer?.user?.name || "Trainer"}
+                {trainer?.user?.name || t("trainer")}
               </h3>
               <p className="text-sm text-base-content/70">
                 {trainer?.yearsOfExperience || 0} years experience
@@ -325,7 +327,7 @@ export default function MyTrainerTab() {
           <div className="card-actions justify-end mt-4">
             <button
               onClick={() => {
-                if (confirm("Are you sure you want to cancel this assignment?")) {
+                if (confirm(t("cancelConfirm"))) {
                   cancelMutation.mutate(assignment._id);
                 }
               }}

@@ -149,5 +149,362 @@
     "memberCode": "Mã hội viên",
     "receiptNo": "Mã biên lai",
     "goToDashboard": "Về Trang Chính"
+  },
+  "Navigation": {
+    "dashboard": "Trang chủ",
+    "rooms": "Phòng tập",
+    "trainers": "Huấn luyện viên",
+    "memberships": "Gói thành viên",
+    "feedbacks": "Phản hồi",
+    "admin": "Quản trị",
+    "profile": "Xem hồ sơ của tôi",
+    "myTrainerProfile": "Hồ sơ huấn luyện viên",
+    "signOut": "Đăng xuất",
+    "signIn": "Đăng nhập",
+    "hi": "Xin chào, {name}"
+  },
+  "Auth": {
+    "login": {
+      "title": "Chào mừng trở lại!",
+      "subtitle": "Vui lòng đăng nhập vào tài khoản của bạn để tiếp tục.",
+      "email": "Email",
+      "emailPlaceholder": "Nhập email của bạn",
+      "password": "Mật khẩu",
+      "passwordPlaceholder": "Nhập mật khẩu của bạn",
+      "forgotPassword": "Quên mật khẩu?",
+      "signIn": "Đăng nhập",
+      "noAccount": "Chưa có tài khoản?",
+      "signUpToday": "Đăng ký ngay!",
+      "or": "Hoặc"
+    },
+    "register": {
+      "title": "Tạo tài khoản",
+      "subtitle": "Tham gia cùng chúng tôi và bắt đầu hành trình thể dục của bạn ngay hôm nay!",
+      "email": "Email",
+      "emailPlaceholder": "Nhập email của bạn",
+      "name": "Họ và tên",
+      "namePlaceholder": "Nhập họ tên đầy đủ",
+      "phone": "Số điện thoại",
+      "phonePlaceholder": "Nhập số điện thoại của bạn",
+      "password": "Mật khẩu",
+      "passwordPlaceholder": "Nhập mật khẩu của bạn",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "signUp": "Đăng ký",
+      "hasAccount": "Đã có tài khoản?",
+      "signInNow": "Đăng nhập ngay!",
+      "or": "Hoặc"
+    },
+    "forgotPassword": {
+      "title": "Quên mật khẩu",
+      "subtitle": "Nhập email của bạn để nhận liên kết đặt lại mật khẩu.",
+      "email": "Email",
+      "emailPlaceholder": "Nhập email của bạn",
+      "sendResetLink": "Gửi liên kết đặt lại",
+      "backToLogin": "Quay lại đăng nhập"
+    },
+    "resetPassword": {
+      "title": "Đặt lại mật khẩu",
+      "subtitle": "Nhập mật khẩu mới của bạn bên dưới.",
+      "password": "Mật khẩu mới",
+      "passwordPlaceholder": "Nhập mật khẩu của bạn",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "resetPassword": "Đặt lại mật khẩu"
+    },
+    "validation": {
+      "emailRequired": "Yêu cầu nhập email",
+      "emailInvalid": "Phải là địa chỉ email hợp lệ",
+      "passwordRequired": "Yêu cầu nhập mật khẩu",
+      "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+      "passwordsNoMatch": "Mật khẩu không khớp",
+      "nameRequired": "Yêu cầu nhập tên",
+      "nameMinLength": "Tên phải có ít nhất 2 ký tự",
+      "phoneRequired": "Yêu cầu nhập số điện thoại"
+    }
+  },
+  "Trainers": {
+    "sessionSchedule": {
+      "title": "Lên lịch buổi tập",
+      "date": "Ngày tập",
+      "dateRequired": "Yêu cầu nhập ngày",
+      "duration": "Thời lượng (phút)",
+      "durationRequired": "Yêu cầu nhập thời lượng",
+      "exercises": "Bài tập",
+      "addExercise": "Thêm bài tập",
+      "exerciseName": "Tên bài tập",
+      "exerciseNameRequired": "Yêu cầu nhập tên bài tập",
+      "sets": "Hiệp",
+      "setsRequired": "Yêu cầu nhập số hiệp",
+      "reps": "Lần lặp",
+      "repsRequired": "Yêu cầu nhập số lần",
+      "weight": "Trọng lượng (kg)",
+      "weightOptional": "Tùy chọn",
+      "notes": "Ghi chú",
+      "notesPlaceholder": "Ghi chú tùy chọn",
+      "scheduleSession": "Lên lịch buổi tập"
+    },
+    "completeSession": {
+      "title": "Hoàn thành buổi tập",
+      "sessionNotes": "Ghi chú buổi tập",
+      "sessionNotesRequired": "Vui lòng cung cấp ghi chú buổi tập",
+      "sessionNotesPlaceholder": "Buổi tập diễn ra như thế nào? Có nhận xét hoặc khuyến nghị nào không?",
+      "exercises": "Hiệu suất bài tập",
+      "actualSets": "Số hiệp thực tế",
+      "actualReps": "Số lần thực tế",
+      "actualWeight": "Trọng lượng (kg)",
+      "required": "Bắt buộc",
+      "performanceNotes": "Ghi chú",
+      "performanceNotesPlaceholder": "Vấn đề về tư thế, độ khó, v.v.",
+      "completeSession": "Hoàn thành buổi tập"
+    },
+    "sessionFeedback": {
+      "title": "Phản hồi buổi tập",
+      "rating": "Đánh giá",
+      "ratingRequired": "Yêu cầu đánh giá",
+      "feedback": "Phản hồi",
+      "feedbackRequired": "Vui lòng cung cấp phản hồi",
+      "feedbackPlaceholder": "Chia sẻ trải nghiệm của bạn với buổi tập này...",
+      "submitFeedback": "Gửi phản hồi"
+    },
+    "trainerCard": {
+      "trainer": "Huấn luyện viên",
+      "viewProfile": "Xem hồ sơ"
+    },
+    "requestTrainer": {
+      "title": "Yêu cầu huấn luyện viên",
+      "notes": "Ghi chú",
+      "notesPlaceholder": "Nói với huấn luyện viên về mục tiêu thể dục của bạn...",
+      "sendRequest": "Gửi yêu cầu"
+    },
+    "trainerProfile": {
+      "daysOfWeek": {
+        "sunday": "Chủ Nhật",
+        "monday": "Thứ Hai",
+        "tuesday": "Thứ Ba",
+        "wednesday": "Thứ Tư",
+        "thursday": "Thứ Năm",
+        "friday": "Thứ Sáu",
+        "saturday": "Thứ Bảy"
+      },
+      "specialization": "Chuyên môn",
+      "specializationRequired": "Vui lòng chọn ít nhất một chuyên môn",
+      "bio": "Tiểu sử",
+      "bioRequired": "Yêu cầu nhập tiểu sử",
+      "bioPlaceholder": "Tôi là một huấn luyện viên thể dục đam mê với chuyên môn về...",
+      "certifications": "Chứng chỉ",
+      "certificationsRequired": "Vui lòng thêm ít nhất một chứng chỉ",
+      "experience": "Số năm kinh nghiệm",
+      "experienceRequired": "Yêu cầu nhập kinh nghiệm",
+      "availability": "Lịch làm việc",
+      "availabilityRequired": "Bắt buộc",
+      "maxClients": "Số học viên tối đa",
+      "saveProfile": "Lưu hồ sơ"
+    }
+  },
+  "Common": {
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "add": "Thêm",
+    "remove": "Xóa",
+    "submit": "Gửi",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước",
+    "confirm": "Xác nhận",
+    "close": "Đóng",
+    "optional": "Tùy chọn",
+    "required": "Bắt buộc"
+  },
+  "LandingPage": {
+    "hero": {
+      "title": "Bắt Đầu Hành Trình Thể Dục Của Bạn Ngay Hôm Nay",
+      "subtitle": "Khám phá phòng gym được thiết kế xung quanh mục tiêu của bạn. Dù bạn đang xây dựng sức mạnh, cải thiện sức khỏe, hay đơn giản là tìm kiếm nơi giúp bạn duy trì động lực, huấn luyện viên, lớp học và thiết bị hiện đại của chúng tôi luôn hỗ trợ bạn từng bước. Tham gia cộng đồng tôn vinh tiến bộ, khuyến khích sự kiên trì và tin vào tiềm năng của bạn.",
+      "getStarted": "Bắt Đầu"
+    },
+    "signUpForm": {
+      "email": "Email",
+      "emailPlaceholder": "Nhập email của bạn",
+      "name": "Tên",
+      "namePlaceholder": "Nhập tên của bạn",
+      "phone": "Số Điện Thoại",
+      "phonePlaceholder": "Nhập số điện thoại của bạn",
+      "signMeUp": "Đăng ký ngay!"
+    },
+    "testimonials": {
+      "title": "Khách Hàng Nói Gì Về Chúng Tôi",
+      "subtitle": "Trải nghiệm thực tế từ những người đã tập luyện, phát triển và thay đổi cùng chúng tôi."
+    },
+    "features": {
+      "consistency": {
+        "title": "Mọi Thứ Bạn Cần Để Duy Trì Thói Quen",
+        "description": "Từ thiết bị đến huấn luyện, mọi chi tiết được thiết kế để giúp bạn tập tốt hơn, cảm thấy mạnh mẽ hơn và duy trì động lực tuần này qua tuần khác. Dù bạn mới bắt đầu hay đang hướng tới cấp độ tiếp theo, chúng tôi đã xây dựng môi trường giúp bạn tiếp tục xuất hiện."
+      },
+      "programs": {
+        "title": "Chương Trình Cho Mọi Cấp Độ",
+        "description": "Dù bạn mới bắt đầu hay nâng cấp, các lộ trình tập luyện hướng dẫn của chúng tôi giúp bạn duy trì thói quen mà không cần suy nghĩ quá nhiều. Xây dựng sức mạnh, sự tự tin và thói quen — từng bước một."
+      },
+      "tracking": {
+        "title": "Theo Dõi Tiến Trình Dễ Dàng",
+        "description": "Hình dung sự cải thiện của bạn với biểu đồ tiến độ đơn giản và công cụ theo dõi thói quen. Duy trì động lực khi bạn thấy sự kiên trì của mình biến thành kết quả thực sự."
+      }
+    },
+    "finalCta": {
+      "title": "Vậy điều gì đang ngăn cản bạn?",
+      "subtitle": "Trở thành thành viên của GymEmbrace và nhận những lợi ích tuyệt vời!"
+    }
+  },
+  "Specializations": {
+    "weightLoss": "Giảm Cân",
+    "muscleBuilding": "Tăng Cơ",
+    "athleticPerformance": "Hiệu Suất Thể Thao",
+    "rehabilitation": "Phục Hồi Chức Năng",
+    "yoga": "Yoga",
+    "cardio": "Cardio",
+    "strengthTraining": "Tập Sức Mạnh",
+    "nutrition": "Dinh Dưỡng",
+    "crossfit": "CrossFit",
+    "powerlifting": "Cử Tạ"
+  },
+  "Profile": {
+    "tabs": {
+      "overview": "Tổng Quan",
+      "accountInfo": "Thông Tin Tài Khoản",
+      "myPlan": "Gói Của Tôi",
+      "myTrainer": "Huấn Luyện Viên",
+      "workoutHistory": "Lịch Sử Tập Luyện",
+      "billing": "Thanh Toán"
+    },
+    "underConstruction": "Trang này đang được xây dựng.",
+    "overview": {
+      "memberCode": "Mã Hội Viên",
+      "bmiCategory": {
+        "underweight": "Thiếu Cân",
+        "normal": "Bình Thường",
+        "overweight": "Thừa Cân",
+        "obese": "Béo Phì"
+      }
+    },
+    "accountInfo": {
+      "personalInfo": "Thông Tin Cá Nhân",
+      "name": "Tên",
+      "phone": "Số Điện Thoại",
+      "save": "Lưu Thay Đổi",
+      "profilePicture": "Ảnh Đại Diện",
+      "changePassword": "Đổi Mật Khẩu",
+      "currentPassword": "Mật Khẩu Hiện Tại",
+      "newPassword": "Mật Khẩu Mới",
+      "confirmPassword": "Xác Nhận Mật Khẩu",
+      "updatePassword": "Cập Nhật Mật Khẩu",
+      "validation": {
+        "nameMinLength": "Tên phải có ít nhất 2 ký tự",
+        "phoneRequired": "Yêu cầu nhập số điện thoại",
+        "passwordMinLength": "Mật khẩu phải có ít nhất 8 ký tự",
+        "passwordsNoMatch": "Mật khẩu không khớp"
+      }
+    },
+    "myPlan": {
+      "title": "Gói Thành Viên Của Tôi",
+      "noMembership": "Không Có Gói Thành Viên",
+      "renewNow": "Gia Hạn Ngay"
+    },
+    "myTrainer": {
+      "title": "Huấn Luyện Viên Của Tôi",
+      "noAssignment": "Chưa Có Huấn Luyện Viên",
+      "findTrainer": "Tìm Huấn Luyện Viên",
+      "cancelConfirm": "Bạn có chắc muốn hủy phân công này không?",
+      "trainer": "Huấn Luyện Viên"
+    },
+    "workoutHistory": {
+      "title": "Lịch Sử Tập Luyện",
+      "status": {
+        "active": "Đang Hoạt Động",
+        "completed": "Hoàn Thành"
+      }
+    }
+  },
+  "Feedbacks": {
+    "title": "Phản Hồi",
+    "createNew": "Tạo mới",
+    "noTitle": "Không có tiêu đề - Reol"
+  },
+  "Rooms": {
+    "title": "Phòng Tập",
+    "createNew": "Tạo mới",
+    "createNewRoom": "Tạo phòng mới",
+    "name": "Tên",
+    "nameRequired": "Yêu cầu nhập tên",
+    "type": "Loại",
+    "isActive": "Hoạt động",
+    "create": "Tạo",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa"
+  },
+  "API": {
+    "errors": {
+      "unauthorized": "Không có quyền truy cập",
+      "forbidden": "Cấm: Yêu cầu quyền quản trị viên",
+      "notAuthorized": "Không được phép",
+      "packageNotFound": "Không tìm thấy gói",
+      "packageInactive": "Gói không hoạt động",
+      "userNotFound": "Không tìm thấy người dùng",
+      "staffNotFound": "Không tìm thấy nhân viên",
+      "staffProfileExists": "Hồ sơ nhân viên đã tồn tại",
+      "notStaffMember": "Không phải là nhân viên",
+      "alreadyCheckedIn": "Đã điểm danh",
+      "noActiveCheckIn": "Không tìm thấy điểm danh đang hoạt động",
+      "noActiveMembership": "Không tìm thấy thành viên đang hoạt động",
+      "needActiveMembership": "Bạn cần có gói thành viên đang hoạt động để yêu cầu huấn luyện viên",
+      "membershipExpired": "Gói thành viên của bạn đã hết hạn",
+      "noRemainingSessions": "Gói thành viên của bạn không còn buổi tập",
+      "invalidTrainerId": "ID huấn luyện viên không hợp lệ",
+      "trainerNotFound": "Không tìm thấy huấn luyện viên",
+      "trainerInactive": "Không tìm thấy huấn luyện viên hoặc không hoạt động",
+      "trainerProfileNotFound": "Không tìm thấy hồ sơ huấn luyện viên",
+      "onlyCoachesCanCreateProfile": "Chỉ có huấn luyện viên mới có thể tạo hồ sơ",
+      "profileNotFound": "Không tìm thấy hồ sơ",
+      "maxClientsReached": "Huấn luyện viên đã đạt số lượng học viên tối đa",
+      "maxClientCapacityReached": "Đạt số lượng học viên tối đa",
+      "alreadyHasTrainer": "Bạn đã có huấn luyện viên đang hoạt động",
+      "assignmentNotFound": "Không tìm thấy phân công",
+      "assignmentNotActive": "Không tìm thấy phân công hoặc không hoạt động",
+      "invalidAssignmentId": "ID phân công không hợp lệ",
+      "invalidSessionId": "ID buổi tập không hợp lệ",
+      "sessionNotFound": "Không tìm thấy buổi tập",
+      "sessionAlreadyCompleted": "Buổi tập đã hoàn thành",
+      "sessionNotCompleted": "Không tìm thấy buổi tập hoặc chưa hoàn thành",
+      "pendingRequestNotFound": "Không tìm thấy yêu cầu đang chờ",
+      "roomNotFound": "Không tìm thấy phòng",
+      "equipmentNotFound": "Không tìm thấy thiết bị",
+      "equipmentWrongRoom": "Không tìm thấy thiết bị hoặc sai ID phòng",
+      "failedToSetThreadId": "Không thể đặt threadId",
+      "alreadyHasActiveMembership": "Bạn đã có gói thành viên đang hoạt động. Sử dụng /renew để gia hạn.",
+      "noActiveMembershipToRenew": "Không tìm thấy gói thành viên đang hoạt động. Sử dụng /purchase để mua gói mới.",
+      "noSessionsRemaining": "Không còn buổi tập. Vui lòng gia hạn gói thành viên."
+    },
+    "success": {
+      "packageDeleted": "Xóa gói thành công",
+      "staffCreated": "Tạo nhân viên thành công",
+      "staffUpdated": "Cập nhật nhân viên thành công",
+      "checkInSuccess": "Điểm danh thành công",
+      "checkOutSuccess": "Checkout thành công",
+      "profileCreated": "Tạo hồ sơ thành công",
+      "profileUpdated": "Cập nhật hồ sơ thành công",
+      "trainerRequestSent": "Đã gửi yêu cầu huấn luyện viên. Đợi huấn luyện viên phê duyệt.",
+      "requestAccepted": "Chấp nhận yêu cầu thành công",
+      "assignmentCancelled": "Hủy phân công thành công",
+      "sessionScheduled": "Lên lịch buổi tập thành công",
+      "sessionCompleted": "Đã đánh dấu buổi tập hoàn thành",
+      "feedbackSubmitted": "Gửi phản hồi thành công",
+      "roomUpdated": "Cập nhật phòng thành công",
+      "roomDeleted": "Xóa phòng thành công",
+      "equipmentUpdated": "Cập nhật thiết bị thành công",
+      "equipmentDeleted": "Xóa thiết bị thành công"
+    }
   }
 }

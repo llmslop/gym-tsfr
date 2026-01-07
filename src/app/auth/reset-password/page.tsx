@@ -16,18 +16,21 @@ import { authClient } from "@/lib/auth-client";
 import Logo from "@/components/logo";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/components/toast-context";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
+  const t = useTranslations("Auth.resetPassword");
+  const tValidation = useTranslations("Auth.validation");
   const formSchema = z
     .object({
       password: z
         .string()
-        .min(8, "Password must have at least 8 characters")
+        .min(8, tValidation("passwordMinLength"))
         .default(""),
       confirmPassword: z.string().default(""),
     })
     .refine((data) => data.password === data.confirmPassword, {
-      error: "Passwords do not match",
+      message: tValidation("passwordsNoMatch"),
       path: ["confirmPassword"],
     });
 
@@ -75,9 +78,9 @@ export default function LoginPage() {
         >
           <fieldset className="fieldset">
             <legend className="fieldset-legend flex flex-col items-start mb-4">
-              <h1 className="font-bold text-3xl">Change your password</h1>
+              <h1 className="font-bold text-3xl">{t("title")}</h1>
               <p className="font-medium text-base-content/70">
-                Enter your new password below to reset it.
+                {t("subtitle")}
               </p>
             </legend>
 
@@ -104,7 +107,7 @@ export default function LoginPage() {
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Your password here"
+                  placeholder={t("passwordPlaceholder")}
                   className="input input-bordered w-full pl-8"
                   {...register("password")}
                 />
@@ -138,7 +141,7 @@ export default function LoginPage() {
                 <input
                   id="confirm-password"
                   type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Retype your password here"
+                  placeholder={t("passwordPlaceholder")}
                   className="input input-bordered w-full pl-8"
                   {...register("confirmPassword")}
                 />

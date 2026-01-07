@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { useMutation } from "@tanstack/react-query";
 import { api } from "@/lib/eden";
 import { useToast } from "@/components/toast-context";
@@ -21,6 +22,7 @@ type SessionScheduleFormData = {
 };
 
 export default function SessionScheduleForm({
+  const t = useTranslations("Trainers.sessionSchedule");
   assignmentId,
   memberName,
   onSuccess,
@@ -82,7 +84,7 @@ export default function SessionScheduleForm({
         </label>
         <input
           type="datetime-local"
-          {...register("sessionDate", { required: "Date is required" })}
+          {...register("sessionDate", { required: t("dateRequired") })}
           className="input input-bordered"
         />
         {errors.sessionDate && (
@@ -101,7 +103,7 @@ export default function SessionScheduleForm({
         </label>
         <input
           type="number"
-          {...register("duration", { required: "Duration is required", min: 15 })}
+          {...register("duration", { required: t("durationRequired"), min: 15 })}
           className="input input-bordered"
         />
         {errors.duration && (
@@ -150,7 +152,7 @@ export default function SessionScheduleForm({
                 </label>
                 <input
                   {...register(`exercises.${index}.name`, {
-                    required: "Exercise name is required",
+                    required: t("exerciseNameRequired"),
                   })}
                   className="input input-bordered"
                   placeholder="e.g., Bench Press"
@@ -171,7 +173,7 @@ export default function SessionScheduleForm({
                 <input
                   type="number"
                   {...register(`exercises.${index}.sets`, {
-                    required: "Sets required",
+                    required: t("setsRequired"),
                     min: 1,
                   })}
                   className="input input-bordered"
@@ -185,7 +187,7 @@ export default function SessionScheduleForm({
                 <input
                   type="number"
                   {...register(`exercises.${index}.reps`, {
-                    required: "Reps required",
+                    required: t("repsRequired"),
                     min: 1,
                   })}
                   className="input input-bordered"
@@ -201,7 +203,7 @@ export default function SessionScheduleForm({
                   step="0.1"
                   {...register(`exercises.${index}.weight`)}
                   className="input input-bordered"
-                  placeholder="Optional"
+                  placeholder={t("weightOptional")}
                 />
               </div>
 
@@ -212,7 +214,7 @@ export default function SessionScheduleForm({
                 <input
                   {...register(`exercises.${index}.notes`)}
                   className="input input-bordered"
-                  placeholder="Optional notes"
+                  placeholder={t("notesPlaceholder")}
                 />
               </div>
             </div>
@@ -230,7 +232,7 @@ export default function SessionScheduleForm({
           {mutation.isPending ? (
             <span className="loading loading-spinner"></span>
           ) : (
-            "Schedule Session"
+            t("scheduleSession")
           )}
         </button>
       </div>

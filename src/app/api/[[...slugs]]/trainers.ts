@@ -10,6 +10,7 @@ import {
   TrainingSession,
   TrainingSessionWithId,
 } from "@/lib/gym/trainer";
+import { t as translate } from "@/lib/i18n-server";
 
 export const trainersRouter = new Elysia({ prefix: "/trainers" })
   // GET /trainers - List all active trainer profiles (public)
@@ -60,7 +61,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!ObjectId.isValid(id)) {
         set.status = 400;
-        return { message: "Invalid trainer ID" };
+        return { message: await translate("API.errors.invalidTrainerId") };
       }
 
       const trainer = await db
@@ -69,7 +70,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!trainer) {
         set.status = 404;
-        return { message: "Trainer not found" };
+        return { message: await translate("API.errors.trainerNotFound") };
       }
 
       // Get user info
@@ -126,7 +127,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!session?.user?.id) {
         set.status = 401;
-        return { message: "Unauthorized" };
+        return { message: await translate("API.errors.unauthorized") };
       }
 
       const userId = new ObjectId(session.user.id);
@@ -135,7 +136,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
       const user = await db.collection("user").findOne({ _id: userId });
       if (user?.role !== "coach" && user?.role !== "admin") {
         set.status = 403;
-        return { message: "Only coaches can create trainer profiles" };
+        return { message: await translate("API.errors.onlyCoachesCanCreateProfile") };
       }
 
       // Check if profile exists
@@ -159,7 +160,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
             }
           );
 
-        return { message: "Profile updated successfully" };
+        return { message: await translate("API.success.profileUpdated") };
       } else {
         // Create new profile
         const profile: TrainerProfile = {
@@ -173,7 +174,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
           .collection<TrainerProfile>("trainer_profiles")
           .insertOne(profile);
 
-        return { message: "Profile created successfully" };
+        return { message: await translate("API.success.profileCreated") };
       }
     },
     {
@@ -201,7 +202,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!session?.user?.id) {
       set.status = 401;
-      return { message: "Unauthorized" };
+      return { message: await translate("API.errors.unauthorized") };
     }
 
     const userId = new ObjectId(session.user.id);
@@ -212,7 +213,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!profile) {
       set.status = 404;
-      return { message: "Profile not found" };
+      return { message: await translate("API.errors.profileNotFound") };
     }
 
     return profile;
@@ -226,7 +227,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!session?.user?.id) {
         set.status = 401;
-        return { message: "Unauthorized" };
+        return { message: await translate("API.errors.unauthorized") };
       }
 
       const memberId = new ObjectId(session.user.id);
@@ -244,13 +245,13 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!membership) {
         set.status = 400;
-        return { message: "You need an active membership to request a trainer" };
+        return { message: await translate("API.errors.needActiveMembership") };
       }
 
       if (membership.kind === "duration") {
         if (membership.endAt && new Date(membership.endAt).getTime() <= now.getTime()) {
           set.status = 400;
-          return { message: "Your membership has expired" };
+          return { message: await translate("API.errors.membershipExpired") };
         }
       }
 
@@ -259,7 +260,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
         const total = membership.totalSessions ?? 0;
         if (used >= total) {
           set.status = 400;
-          return { message: "Your membership has no remaining sessions" };
+          return { message: await translate("API.errors.noRemainingSessions") };
         }
       }
 
@@ -270,7 +271,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!trainer) {
         set.status = 404;
-        return { message: "Trainer not found or inactive" };
+        return { message: await translate("API.errors.trainerInactive") };
       }
 
       // Check if trainer has capacity
@@ -283,7 +284,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (activeCount >= trainer.maxClients) {
         set.status = 400;
-        return { message: "Trainer has reached maximum client capacity" };
+        return { message: await translate("API.errors.maxClientsReached") };
       }
 
       // Check if member already has active assignment
@@ -296,7 +297,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (existingAssignment) {
         set.status = 400;
-        return { message: "You already have an active trainer assignment" };
+        return { message: await translate("API.errors.alreadyHasTrainer") };
       }
 
       // Create assignment
@@ -319,7 +320,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
         .collection<TrainerAssignment>("trainer_assignments")
         .insertOne(assignment);
 
-      return { message: "Trainer request sent. Waiting for trainer approval." };
+      return { message: await translate("API.success.trainerRequestSent") };
     },
     {
       body: t.Object({
@@ -335,7 +336,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!session?.user?.id) {
       set.status = 401;
-      return { message: "Unauthorized" };
+      return { message: await translate("API.errors.unauthorized") };
     }
 
     const userId = new ObjectId(session.user.id);
@@ -347,7 +348,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!profile) {
       set.status = 404;
-      return { message: "Trainer profile not found" };
+      return { message: await translate("API.errors.trainerProfileNotFound") };
     }
 
     // Get pending requests for this trainer
@@ -388,7 +389,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!session?.user?.id) {
       set.status = 401;
-      return { message: "Unauthorized" };
+      return { message: await translate("API.errors.unauthorized") };
     }
 
     const userId = new ObjectId(session.user.id);
@@ -400,7 +401,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!profile) {
       set.status = 404;
-      return { message: "Trainer profile not found" };
+      return { message: await translate("API.errors.trainerProfileNotFound") };
     }
 
     // Verify assignment belongs to this trainer and is pending
@@ -414,7 +415,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!assignment) {
       set.status = 404;
-      return { message: "Pending request not found" };
+      return { message: await translate("API.errors.pendingRequestNotFound") };
     }
 
     // Check capacity
@@ -427,7 +428,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (activeCount >= profile.maxClients) {
       set.status = 400;
-      return { message: "Maximum client capacity reached" };
+      return { message: await translate("API.errors.maxClientCapacityReached") };
     }
 
     // Accept request
@@ -444,7 +445,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
         }
       );
 
-    return { message: "Request accepted successfully" };
+    return { message: await translate("API.success.requestAccepted") };
   })
 
   // POST /trainers/requests/:id/reject - Reject a trainer request
@@ -455,7 +456,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!session?.user?.id) {
         set.status = 401;
-        return { message: "Unauthorized" };
+        return { message: await translate("API.errors.unauthorized") };
       }
 
       const userId = new ObjectId(session.user.id);
@@ -467,7 +468,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!profile) {
         set.status = 404;
-        return { message: "Trainer profile not found" };
+        return { message: await translate("API.errors.trainerProfileNotFound") };
       }
 
       // Verify assignment belongs to this trainer and is pending
@@ -481,7 +482,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!assignment) {
         set.status = 404;
-        return { message: "Pending request not found" };
+        return { message: await translate("API.errors.pendingRequestNotFound") };
       }
 
       // Reject request
@@ -516,7 +517,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!session?.user?.id) {
       set.status = 401;
-      return { message: "Unauthorized" };
+      return { message: await translate("API.errors.unauthorized") };
     }
 
     const memberId = new ObjectId(session.user.id);
@@ -568,7 +569,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!session?.user?.id) {
       set.status = 401;
-      return { message: "Unauthorized" };
+      return { message: await translate("API.errors.unauthorized") };
     }
 
     const userId = new ObjectId(session.user.id);
@@ -580,7 +581,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!profile) {
       set.status = 404;
-      return { message: "Trainer profile not found" };
+      return { message: await translate("API.errors.trainerProfileNotFound") };
     }
 
     // Get assignments
@@ -615,7 +616,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!session?.user?.id) {
         set.status = 401;
-        return { message: "Unauthorized" };
+        return { message: await translate("API.errors.unauthorized") };
       }
 
       const userId = new ObjectId(session.user.id);
@@ -628,7 +629,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!profile) {
         set.status = 403;
-        return { message: "Trainer profile not found" };
+        return { message: await translate("API.errors.trainerProfileNotFound") };
       }
 
       // Verify assignment belongs to this trainer
@@ -642,7 +643,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!assignment) {
         set.status = 404;
-        return { message: "Assignment not found or not active" };
+        return { message: await translate("API.errors.assignmentNotActive") };
       }
 
       // Create training session
@@ -666,7 +667,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
         .collection<TrainingSession>("training_sessions")
         .insertOne(trainingSession);
 
-      return { message: "Session scheduled successfully" };
+      return { message: await translate("API.success.sessionScheduled") };
     },
     {
       body: t.Object({
@@ -694,7 +695,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!session?.user?.id) {
         set.status = 401;
-        return { message: "Unauthorized" };
+        return { message: await translate("API.errors.unauthorized") };
       }
 
       const userId = new ObjectId(session.user.id);
@@ -703,7 +704,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!ObjectId.isValid(id)) {
         set.status = 400;
-        return { message: "Invalid session ID" };
+        return { message: await translate("API.errors.invalidSessionId") };
       }
 
       // Get trainer profile
@@ -713,7 +714,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!profile) {
         set.status = 403;
-        return { message: "Trainer profile not found" };
+        return { message: await translate("API.errors.trainerProfileNotFound") };
       }
 
       // Get session
@@ -726,12 +727,12 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!trainingSession) {
         set.status = 404;
-        return { message: "Session not found" };
+        return { message: await translate("API.errors.sessionNotFound") };
       }
 
       if (trainingSession.status === "completed") {
         set.status = 400;
-        return { message: "Session already completed" };
+        return { message: await translate("API.errors.sessionAlreadyCompleted") };
       }
 
       // Update session
@@ -757,7 +758,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
           { $inc: { completedSessions: 1 } }
         );
 
-      return { message: "Session marked as completed" };
+      return { message: await translate("API.success.sessionCompleted") };
     },
     {
       params: t.Object({
@@ -786,7 +787,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!session?.user?.id) {
         set.status = 401;
-        return { message: "Unauthorized" };
+        return { message: await translate("API.errors.unauthorized") };
       }
 
       const memberId = new ObjectId(session.user.id);
@@ -795,7 +796,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!ObjectId.isValid(id)) {
         set.status = 400;
-        return { message: "Invalid session ID" };
+        return { message: await translate("API.errors.invalidSessionId") };
       }
 
       // Get session
@@ -809,7 +810,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!trainingSession) {
         set.status = 404;
-        return { message: "Session not found or not completed" };
+        return { message: await translate("API.errors.sessionNotCompleted") };
       }
 
       // Update feedback
@@ -826,7 +827,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
           }
         );
 
-      return { message: "Feedback submitted successfully" };
+      return { message: await translate("API.success.feedbackSubmitted") };
     },
     {
       params: t.Object({
@@ -845,7 +846,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!session?.user?.id) {
       set.status = 401;
-      return { message: "Unauthorized" };
+      return { message: await translate("API.errors.unauthorized") };
     }
 
     const memberId = new ObjectId(session.user.id);
@@ -879,7 +880,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!session?.user?.id) {
       set.status = 401;
-      return { message: "Unauthorized" };
+      return { message: await translate("API.errors.unauthorized") };
     }
 
     const userId = new ObjectId(session.user.id);
@@ -891,7 +892,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     if (!profile) {
       set.status = 404;
-      return { message: "Trainer profile not found" };
+      return { message: await translate("API.errors.trainerProfileNotFound") };
     }
 
     const sessions = await db
@@ -926,7 +927,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!session?.user?.id) {
         set.status = 401;
-        return { message: "Unauthorized" };
+        return { message: await translate("API.errors.unauthorized") };
       }
 
       const userId = new ObjectId(session.user.id);
@@ -934,7 +935,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!ObjectId.isValid(id)) {
         set.status = 400;
-        return { message: "Invalid assignment ID" };
+        return { message: await translate("API.errors.invalidAssignmentId") };
       }
 
       // Check if user is admin or the assigned coach
@@ -955,7 +956,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
         if (!profile) {
           set.status = 403;
-          return { message: "Not authorized" };
+          return { message: await translate("API.errors.notAuthorized") };
         }
 
         assignment = await db
@@ -968,7 +969,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       if (!assignment) {
         set.status = 404;
-        return { message: "Assignment not found" };
+        return { message: await translate("API.errors.assignmentNotFound") };
       }
 
       // Cancel assignment
@@ -985,7 +986,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
           }
         );
 
-      return { message: "Assignment cancelled successfully" };
+      return { message: await translate("API.success.assignmentCancelled") };
     },
     {
       params: t.Object({
