@@ -5,6 +5,8 @@ import { randomBytes } from "crypto";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { unauthorized } from "./perms";
+import { Package, PackageWithId } from "@/lib/gym/package";
+import { Payment, PaymentWithId } from "@/lib/gym/trainer";
 
 const PACKAGES_COLLECTION = "packages";
 const MEMBERSHIPS_COLLECTION = "memberships";
@@ -25,15 +27,15 @@ type MembershipDoc = {
   userId: ObjectId;
   packageId: ObjectId;
   kind: MembershipKind;
-  
+
   // For duration-based memberships
   startAt: Date;
   endAt: Date | null;
-  
+
   // For session-based memberships
   totalSessions: number | null;
   usedSessions: number | null;
-  
+
   status: MembershipStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -97,7 +99,7 @@ function generateMemberCode(userId: ObjectId): string {
 }
 
 // Parse package duration to membership rules
-function packageToRule(pkg: any):
+function packageToRule<T>(pkg: Package<T>):
   | { kind: "duration"; months?: number; years?: number }
   | { kind: "sessions"; sessions: number } {
   const duration: string | undefined = pkg?.duration;
@@ -179,7 +181,7 @@ async function findActiveMembership(userId: ObjectId): Promise<(MembershipDoc & 
 // ==================== API ROUTES ====================
 
 export const membershipsRouter = new Elysia({ prefix: "/memberships" })
-  
+
   // ===== GET /me - Thông tin membership của user hiện tại =====
   .get("/me", async ({ request: { headers }, status }) => {
     const session = await auth.api.getSession({ headers });
@@ -188,13 +190,13 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
     const userId = new ObjectId(session.user.id);
     const memberCode = await ensureMemberCode(userId);
     const membership = await findActiveMembership(userId);
-    
+
     const pkg = membership
-      ? await db.collection(PACKAGES_COLLECTION).findOne({ _id: membership.packageId })
+      ? await db.collection<PackageWithId<ObjectId>>(PACKAGES_COLLECTION).findOne({ _id: membership.packageId })
       : null;
 
     const payments = await db
-      .collection(PAYMENTS_COLLECTION)
+      .collection<Payment<ObjectId>>(PAYMENTS_COLLECTION)
       .find({ userId }, { sort: { paidAt: -1 }, limit: 10 })
       .toArray();
 
@@ -205,15 +207,16 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
         _id: membership._id.toString(),
         userId: membership.userId.toString(),
         packageId: membership.packageId.toString(),
-        sessionsRemaining: membership.kind === "sessions" 
+        sessionsRemaining: membership.kind === "sessions"
           ? (membership.totalSessions ?? 0) - (membership.usedSessions ?? 0)
           : null,
       } : null,
       package: pkg ? {
         ...pkg,
-        _id: (pkg as any)._id.toString(),
+        _id: pkg._id.toString(),
+        packageId: pkg.packageId.toString(),
       } : null,
-      payments: payments.map((p: any) => ({
+      payments: payments.map(p => ({
         ...p,
         _id: p._id.toString(),
         userId: p.userId.toString(),
@@ -235,14 +238,14 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
 
       // Validate package
       const pkg = await db
-        .collection(PACKAGES_COLLECTION)
+        .collection<PackageWithId<ObjectId>>(PACKAGES_COLLECTION)
         .findOne({ _id: new ObjectId(body.packageId) });
-      
+
       if (!pkg) {
         status(404);
         return { message: "Package not found" };
       }
-      if ((pkg as any).isActive !== true) {
+      if (pkg.isActive !== true) {
         status(400);
         return { message: "Package is inactive" };
       }
@@ -254,20 +257,20 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
       const existingMembership = await findActiveMembership(userId);
       if (existingMembership) {
         status(400);
-        return { 
-          message: "You already have an active membership. Use /renew to extend it." 
+        return {
+          message: "You already have an active membership. Use /renew to extend it."
         };
       }
 
       // Create new membership
       let membershipDoc: MembershipDoc;
-      
+
       if (rule.kind === "duration") {
         const startAt = now;
         const endAt = calculateEndDate(startAt, rule);
         membershipDoc = {
           userId,
-          packageId: (pkg as any)._id,
+          packageId: pkg._id,
           kind: "duration",
           startAt,
           endAt,
@@ -280,7 +283,7 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
       } else {
         membershipDoc = {
           userId,
-          packageId: (pkg as any)._id,
+          packageId: pkg._id,
           kind: "sessions",
           startAt: now,
           endAt: null,
@@ -295,16 +298,16 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
       const membershipResult = await db
         .collection(MEMBERSHIPS_COLLECTION)
         .insertOne(membershipDoc);
-      
+
       const membershipId = membershipResult.insertedId;
 
       // Create payment record
       const payment: PaymentDoc = {
         userId,
         membershipId,
-        packageId: (pkg as any)._id,
-        amount: (pkg as any).price,
-        currency: (pkg as any).currency ?? "VND",
+        packageId: pkg._id,
+        amount: pkg.price,
+        currency: pkg.currency ?? "VND",
         method: body.paymentMethod,
         status: "paid",
         receiptNo: generateReceiptNo(now),
@@ -349,14 +352,14 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
 
       // Validate package
       const pkg = await db
-        .collection(PACKAGES_COLLECTION)
+        .collection<PackageWithId<ObjectId>>(PACKAGES_COLLECTION)
         .findOne({ _id: new ObjectId(body.packageId) });
-      
+
       if (!pkg) {
         status(404);
         return { message: "Package not found" };
       }
-      if ((pkg as any).isActive !== true) {
+      if (pkg.isActive !== true) {
         status(400);
         return { message: "Package is inactive" };
       }
@@ -366,11 +369,11 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
 
       // Get current membership
       const currentMembership = await findActiveMembership(userId);
-      
+
       if (!currentMembership) {
         status(400);
-        return { 
-          message: "No active membership found. Use /purchase to buy a new one." 
+        return {
+          message: "No active membership found. Use /purchase to buy a new one."
         };
       }
 
@@ -382,9 +385,9 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
         const baseDate = currentMembership.kind === "duration" && currentMembership.endAt && currentMembership.endAt > now
           ? currentMembership.endAt
           : now;
-        
+
         updatedFields = {
-          packageId: (pkg as any)._id,
+          packageId: pkg._id,
           kind: "duration",
           endAt: calculateEndDate(baseDate, rule),
           totalSessions: null,
@@ -394,15 +397,15 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
         };
       } else {
         // Add more sessions
-        const currentTotal = currentMembership.kind === "sessions" 
+        const currentTotal = currentMembership.kind === "sessions"
           ? (currentMembership.totalSessions ?? 0)
           : 0;
         const currentUsed = currentMembership.kind === "sessions"
           ? (currentMembership.usedSessions ?? 0)
           : 0;
-        
+
         updatedFields = {
-          packageId: (pkg as any)._id,
+          packageId: pkg._id,
           kind: "sessions",
           endAt: null,
           totalSessions: currentTotal + rule.sessions,
@@ -425,9 +428,9 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
       const payment: PaymentDoc = {
         userId,
         membershipId: currentMembership._id,
-        packageId: (pkg as any)._id,
-        amount: (pkg as any).price,
-        currency: (pkg as any).currency ?? "VND",
+        packageId: pkg._id,
+        amount: pkg.price,
+        currency: pkg.currency ?? "VND",
         method: body.paymentMethod,
         status: "paid",
         receiptNo: generateReceiptNo(now),
@@ -443,8 +446,8 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
         membership: updatedMembership ? {
           ...updatedMembership,
           _id: updatedMembership._id.toString(),
-          userId: (updatedMembership as any).userId.toString(),
-          packageId: (updatedMembership as any).packageId.toString(),
+          userId: updatedMembership.userId.toString(),
+          packageId: updatedMembership.packageId.toString(),
         } : null,
       };
     },
@@ -472,7 +475,7 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
 
       // Get active membership
       const membership = await findActiveMembership(userId);
-      
+
       if (!membership) {
         status(400);
         return { message: "No active membership found" };
@@ -482,18 +485,18 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
       if (membership.kind === "sessions") {
         const used = membership.usedSessions ?? 0;
         const total = membership.totalSessions ?? 0;
-        
+
         if (used >= total) {
           status(400);
-          return { 
-            message: "No sessions remaining. Please renew your membership." 
+          return {
+            message: "No sessions remaining. Please renew your membership."
           };
         }
 
         // Increment used sessions
         await db.collection(MEMBERSHIPS_COLLECTION).updateOne(
           { _id: membership._id },
-          { 
+          {
             $inc: { usedSessions: 1 },
             $set: { updatedAt: now }
           }
@@ -545,9 +548,9 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
       const checkIn = await db
         .collection(CHECK_INS_COLLECTION)
         .findOne<CheckInDoc & { _id: ObjectId }>(
-          { 
-            userId, 
-            checkOutTime: null 
+          {
+            userId,
+            checkOutTime: null
           },
           { sort: { checkInTime: -1 } }
         );
@@ -564,8 +567,8 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
       // Update check-in with check-out time
       await db.collection(CHECK_INS_COLLECTION).updateOne(
         { _id: checkIn._id },
-        { 
-          $set: { 
+        {
+          $set: {
             checkOutTime: now,
             duration: durationMinutes,
             notes: body.notes ?? checkIn.notes,
@@ -614,7 +617,7 @@ export const membershipsRouter = new Elysia({ prefix: "/memberships" })
         total,
         limit,
         skip,
-        checkIns: checkIns.map((c: any) => ({
+        checkIns: checkIns.map(c => ({
           ...c,
           _id: c._id.toString(),
           userId: c.userId.toString(),

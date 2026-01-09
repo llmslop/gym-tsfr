@@ -11,8 +11,8 @@ export const packageDurations = [
 ] as const;
 export type PackageDuration = (typeof packageDurations)[number];
 
-export type Package = {
-  packageId: string;
+export type Package<IdType = string> = {
+  packageId: IdType;
   duration: PackageDuration;
   price: number;
   currency: string;
@@ -22,7 +22,7 @@ export type Package = {
   updatedAt: Date;
 };
 
-export type PackageWithId<IdType = string> = Package & { _id: IdType };
+export type PackageWithId<IdType = string> = Package<IdType> & { _id: IdType };
 
 export const defaultPackages: Omit<Package, "packageId" | "createdAt" | "updatedAt">[] = [
   {

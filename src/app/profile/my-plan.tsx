@@ -4,6 +4,8 @@ import { api } from "@/lib/eden";
 import { useRouter } from "@/i18n/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { Package } from "@/lib/gym/package";
+import { PaymentWithId } from "@/lib/gym/trainer";
 
 type Membership = {
   _id: string;
@@ -15,15 +17,6 @@ type Membership = {
   endAt: Date | string;
   status: string;
   createdAt: Date | string;
-};
-
-type Package = {
-  _id: string;
-  name: string;
-  description?: string;
-  price: number;
-  duration: number;
-  features: string[];
 };
 
 function formatMoney(price: number) {
@@ -140,7 +133,7 @@ export function MyPlan() {
                 </tr>
               </thead>
               <tbody>
-                {data.payments.map((p: { _id: string; receiptNo: string; amount: number; method: string; paidAt: Date | string }) => (
+                {data.payments.map((p: PaymentWithId) => (
                   <tr key={p._id}>
                     <td className="font-mono">{p.receiptNo}</td>
                     <td>{formatMoney(p.amount)}</td>
