@@ -162,7 +162,7 @@ export function UpdateEquipmentForm({
           {...register("warrantyUntil")}
         />
         {errors.warrantyUntil && (
-          <p className="text-error">{errors.warrantyUntil.message}</p>
+          <p className="text-error">{errors.warrantyUntil.message?.toString()}</p>
         )}
 
         <label className="label my-2">

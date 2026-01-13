@@ -53,12 +53,12 @@ const app = new Elysia({ prefix: "/api" })
       .sort({ createdAt: -1 })
       .toArray();
 
-    return users.map((u: any) => ({
+    return users.map((u) => ({
       _id: u._id.toString(),
-      name: u.name,
-      email: u.email,
-      role: u.role,
-      createdAt: u.createdAt,
+      name: u.name as string,
+      email: u.email as string,
+      role: u.role as string | undefined,
+      createdAt: u.createdAt as Date,
     }));
   })
   .post(

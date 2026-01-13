@@ -64,13 +64,13 @@ export default function TrainerProfileForm({
     queryFn: async () => {
       const response = await api.trainers.profile.me.get();
       if (response.error) {
-        const status = (response.error as any).status as number | undefined;
-        const value = (response.error as any).value;
+        const status = (response.error as { status?: number }).status;
+        const value = (response.error as { value?: string | { message?: string } }).value;
         if (status === 404) return null;
         const message =
           typeof value === "string"
             ? value
-            : value?.message
+            : value && typeof value === "object" && "message" in value
               ? String(value.message)
               : "Failed to load trainer profile";
         throw new Error(message);
@@ -109,11 +109,11 @@ export default function TrainerProfileForm({
     mutationFn: async (data: TrainerProfileFormData) => {
       const response = await api.trainers.profile.post(data);
       if (response.error) {
-        const value = (response.error as any).value;
+        const value = (response.error as { value?: string | { message?: string } }).value;
         const message =
           typeof value === "string"
             ? value
-            : value?.message
+            : value && typeof value === "object" && "message" in value
               ? String(value.message)
               : "Failed to save trainer profile";
         throw new Error(message);

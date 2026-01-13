@@ -4,6 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { api } from "@/lib/eden";
 import { useToast } from "@/components/toast-context";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 type TrainerUser = {
   _id: string;
@@ -120,9 +121,9 @@ export default function MyTrainerTab() {
           <span>You don't have an assigned trainer yet</span>
         </div>
 
-        <a href="/trainers" className="btn btn-primary">
+        <Link href="/trainers" className="btn btn-primary">
           Find a Trainer
-        </a>
+        </Link>
       </div>
     );
   }
@@ -223,9 +224,9 @@ export default function MyTrainerTab() {
           </div>
         </div>
 
-        <a href="/trainers" className="btn btn-primary">
+        <Link href="/trainers" className="btn btn-primary">
           Find Another Trainer
-        </a>
+        </Link>
       </div>
     );
   }

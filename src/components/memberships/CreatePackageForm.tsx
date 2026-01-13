@@ -61,7 +61,7 @@ export default function CreatePackageForm({ onSuccess }: CreatePackageFormProps)
       });
 
       if (res.status !== 200) {
-        const errorMsg = (res as any).error?.value?.message || "Failed to create package";
+        const errorMsg = (res as { error?: { value?: { message?: string } } }).error?.value?.message || "Failed to create package";
         throw new Error(errorMsg);
       }
       return res.data;

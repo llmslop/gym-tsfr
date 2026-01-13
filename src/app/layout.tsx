@@ -3,7 +3,6 @@ import { Noto_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import Providers from "@/components/client-providers";
 import ClientProviders from "@/components/client-providers";
 import ServerProviders from "@/components/server-providers";
 
@@ -21,14 +20,8 @@ export const metadata: Metadata = {
 export default async function RootLayout(
   props: Readonly<{
     children: React.ReactNode;
-    params: { locale: string };
   }>
 ) {
-  const params = await props.params;
-
-  const {
-    locale
-  } = params;
 
   const {
     children

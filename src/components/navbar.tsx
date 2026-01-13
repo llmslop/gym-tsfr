@@ -9,9 +9,7 @@ import {
   BuildingOfficeIcon,
   ChartPieIcon,
   ChatBubbleLeftRightIcon,
-  CubeIcon,
-  CurrencyDollarIcon,
-  FlagIcon,
+  QrCodeIcon,
   UserGroupIcon,
   UserPlusIcon,
   Cog6ToothIcon,
@@ -31,6 +29,7 @@ export default function Navbar() {
 
   const routes = [
     [t("dashboard"), "/dashboard", ChartPieIcon],
+    [t("qrScan"), "/scan", QrCodeIcon],
     [t("rooms"), "/rooms", BuildingOfficeIcon],
     [t("trainers"), "/trainers", UserGroupIcon],
     [t("memberships"), "/memberships", UserPlusIcon],

@@ -152,6 +152,7 @@
   },
   "Navigation": {
     "dashboard": "Trang chủ",
+    "qrScan": "Quét QR",
     "rooms": "Phòng tập",
     "trainers": "Huấn luyện viên",
     "memberships": "Gói thành viên",

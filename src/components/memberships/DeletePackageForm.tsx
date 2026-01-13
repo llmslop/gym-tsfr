@@ -24,7 +24,7 @@ export default function DeletePackageForm({
     mutationFn: async () => {
       const res = await api.packages({ id: pkg._id }).delete();
       if (res.status !== 200) {
-        const errorMsg = (res as any).error?.value?.message || "Failed to delete package";
+        const errorMsg = (res as { error?: { value?: { message?: string } } }).error?.value?.message || "Failed to delete package";
         throw new Error(errorMsg);
       }
       return res.data;

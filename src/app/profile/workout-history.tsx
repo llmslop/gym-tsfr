@@ -1,8 +1,10 @@
 import { MonthPicker, MonthYear } from "@/components/month-picker";
 import { authClient } from "@/lib/auth-client";
+import { api } from "@/lib/eden";
+import { EventWithDetails } from "@/lib/event";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Fragment, useEffect, useRef, useState } from "react";
-import { api } from "@/lib/eden";
 import { useQuery } from "@tanstack/react-query";
 
 // Type for check-in data
@@ -263,6 +265,168 @@ function monthDays(monthYear: MonthYear): MonthDay[] {
   }
 
   return days;
+}
+
+type LogEvent = {
+  type: "checkin" | "checkout";
+  center: string;
+  time: Date;
+};
+
+function ordinal(n: number): string {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function formatDateShort(date: Date): string {
+  const month = date.toLocaleString("en-US", { month: "short" });
+  const day = ordinal(date.getDate());
+  return `${month} ${day}`;
+}
+
+function formatTimeShort(date: Date): string {
+  return date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function dateEquals(d1: Date, d2: Date): boolean {
+  return (
+    d1.getDate() === d2.getDate() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getFullYear() === d2.getFullYear()
+  );
+}
+
+const firstPage: LogEvent[] = [
+  {
+    type: "checkout",
+    center: "Downtown Gym",
+    time: new Date(2025, 12, 29, 13, 30, 0),
+  },
+  {
+    type: "checkin",
+    center: "Downtown Gym",
+    time: new Date(2025, 12, 29, 10, 30, 0),
+  },
+  {
+    type: "checkout",
+    center: "Uptown Fitness",
+    time: new Date(2025, 12, 28, 11, 0, 0),
+  },
+  {
+    type: "checkin",
+    center: "Uptown Fitness",
+    time: new Date(2025, 12, 28, 9, 0, 0),
+  },
+];
+
+function WorkoutLog({
+  session,
+}: {
+  session: typeof authClient.$Infer.Session;
+}) {
+  const limit = 5;
+  const {
+    data: events,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["workout-log", session.user.id],
+    initialPageParam: 0,
+    queryFn: async ({ pageParam }: { pageParam: number }) => {
+      const { data, error, status } = await api.events.list.own.get({
+        query: {
+          offset: pageParam ?? 0,
+          limit,
+        },
+      });
+      if (status === 200) {
+        return data!;
+      }
+      throw new Error(error?.value?.message ?? "Failed to fetch workout log");
+    },
+    getNextPageParam: (lastPage, allPages) => {
+      if (!lastPage || !lastPage.hasMore) return undefined;
+      return allPages.length * limit; // next offset
+    },
+  });
+  // const [events, setEvents] = useState<LogEvent[]>([]);
+
+  function eventLabel(ev: EventWithDetails) {
+    switch (ev.mode) {
+      case "check-in":
+        return (
+          <span>
+            <b>Checked in</b> at {ev.room?.name}
+          </span>
+        );
+      case "check-out":
+        return (
+          <span>
+            <b>Checked out</b> from {ev.room?.name}
+          </span>
+        );
+    }
+  }
+
+  const loadingElem = useRef(null);
+  useEffect(() => {
+    if (!loadingElem.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchNextPage();
+        }
+      },
+      {
+        threshold: 0.1,
+      },
+    );
+
+    observer.observe(loadingElem.current);
+    return () => observer.disconnect();
+  }, [loadingElem, events, fetchNextPage]);
+
+  const allEvents =
+    events === undefined ? [] : events.pages.flatMap((page) => page.events);
+
+  return (
+    <fieldset className="fieldset bg-base-200 border-base-300 rounded-box border p-4 w-full max-w-7xl">
+      <legend className="fieldset-legend">Workout log</legend>
+      <ul className="grid grid-cols-[auto_auto_1fr] bg-base-200 p-2 text-lg">
+        {allEvents.map((ev, idx) => (
+          <div
+            key={`workout-log-event-${idx}`}
+            className="hover:bg-base-300 grid grid-cols-subgrid col-start-1 -col-end-1 p-2 gap-2 items-baseline"
+          >
+            <div
+              key={`event-date-${idx}`}
+              className="text-base text-base-content/70"
+            >
+              {(idx === 0 ||
+                !dateEquals(ev.createdAt, allEvents[idx - 1].createdAt)) &&
+                formatDateShort(ev.createdAt)}
+            </div>
+            <div
+              key={`event-time-${idx}`}
+              className="text-base text-base-content/70"
+            >
+              {formatTimeShort(ev.createdAt)}
+            </div>
+            <div key={`event-label-${idx}`}>{eventLabel(ev)}</div>
+          </div>
+        ))}
+        {hasNextPage && (
+          <div className="flex justify-center col-span-3" ref={loadingElem}>
+            <span className="loading loading-dots loading-md"></span>
+          </div>
+        )}
+      </ul>
+    </fieldset>
+  );
 }
 
 export function WorkoutHistory({

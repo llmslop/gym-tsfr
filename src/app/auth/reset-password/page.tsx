@@ -52,10 +52,11 @@ export default function LoginPage() {
     mutationFn: async (formData: z.infer<typeof formSchema>) => {
       const token =
         new URLSearchParams(window.location.search).get("token") ?? undefined;
-      await authClient.resetPassword({
+      const {error} = await authClient.resetPassword({
         newPassword: formData.password,
         token,
       });
+      if(error) throw new Error(error.message);
     },
     onError: (err) => toast({ type: "success", message: err.message }),
   });

@@ -32,7 +32,6 @@ export default function AdminPage() {
   const queryClient = useQueryClient();
   
   const [activeTab, setActiveTab] = useState<"users" | "staff" | "attendance">("users");
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showStaffForm, setShowStaffForm] = useState(false);
   const [staffFormData, setStaffFormData] = useState({
     userId: "",
@@ -43,12 +42,6 @@ export default function AdminPage() {
     salary: "",
     notes: "",
   });
-
-  // Check admin
-  if (!isSessionPending && session?.user?.role !== "admin") {
-    router.push("/dashboard");
-    return null;
-  }
 
   // Fetch users
   const { data: users, isLoading: usersLoading } = useQuery({
@@ -78,7 +71,14 @@ export default function AdminPage() {
     queryFn: async () => {
       const res = await api.staff.attendance.all.get();
       if (res.error) throw new Error(res.error.value as unknown as string);
-      return res.data as any[];
+      return res.data as Array<{
+        _id: string;
+        user?: { name: string };
+        checkInTime: string;
+        checkOutTime?: string;
+        totalHours?: number;
+        status: string;
+      }>;
     },
     enabled: session?.user?.role === "admin" && activeTab === "attendance",
   });
@@ -113,7 +113,7 @@ export default function AdminPage() {
         notes: "",
       });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({ type: "error", message: error.message });
     },
   });
@@ -127,6 +127,12 @@ export default function AdminPage() {
   const availableUsers = users?.filter(
     (user) => !staff?.some((s) => s.userId === user._id) && user.role === "user"
   );
+
+  // Check admin after all hooks
+  if (!isSessionPending && session?.user?.role !== "admin") {
+    router.push("/dashboard");
+    return null;
+  }
 
   if (isSessionPending) {
     return (
@@ -289,7 +295,7 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {attendance?.map((a: any) => (
+                  {attendance?.map((a) => (
                     <tr key={a._id}>
                       <td>{a.user?.name}</td>
                       <td>{new Date(a.checkInTime).toLocaleString()}</td>

@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth";
-import { openAPI } from "better-auth/plugins";
 
 let _schema: ReturnType<typeof auth.api.generateOpenAPISchema>;
 const getSchema = async () => (_schema ??= auth.api.generateOpenAPISchema());

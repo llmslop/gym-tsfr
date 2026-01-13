@@ -19,13 +19,13 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
     async ({ query }) => {
       const { specialization } = query;
 
-      const filter: any = { isActive: true };
+      const filter: Record<string, unknown> = { isActive: true };
       if (specialization) {
         filter.specialization = specialization;
       }
 
       const trainers = await db
-        .collection<TrainerProfileWithId>("trainer_profiles")
+        .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
         .find(filter)
         .toArray();
 
@@ -44,7 +44,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
         user: userMap.get(trainer.userId.toString()),
       }));
 
-      return trainersWithUser;
+      return trainersWithUser as unknown as TrainerProfileWithId[];
     },
     {
       query: t.Object({
@@ -65,7 +65,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
       }
 
       const trainer = await db
-        .collection<TrainerProfileWithId>("trainer_profiles")
+        .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
         .findOne({ _id: new ObjectId(id), isActive: true });
 
       if (!trainer) {
@@ -83,7 +83,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Get assignment stats
       const stats = await db
-        .collection<TrainerAssignmentWithId>("trainer_assignments")
+        .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
         .aggregate([
           { $match: { trainerId: trainer._id } },
           {
@@ -141,7 +141,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Check if profile exists
       const existing = await db
-        .collection<TrainerProfileWithId>("trainer_profiles")
+        .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
         .findOne({ userId });
 
       const now = new Date();
@@ -149,7 +149,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
       if (existing) {
         // Update existing profile
         await db
-          .collection<TrainerProfile>("trainer_profiles")
+          .collection<TrainerProfile<ObjectId>>("trainer_profiles")
           .updateOne(
             { userId },
             {
@@ -163,7 +163,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
         return { message: await translate("API.success.profileUpdated") };
       } else {
         // Create new profile
-        const profile: TrainerProfile = {
+        const profile: TrainerProfile<ObjectId> = {
           userId,
           ...body,
           createdAt: now,
@@ -171,7 +171,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
         };
 
         await db
-          .collection<TrainerProfile>("trainer_profiles")
+          .collection<TrainerProfile<ObjectId>>("trainer_profiles")
           .insertOne(profile);
 
         return { message: await translate("API.success.profileCreated") };
@@ -208,7 +208,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
     const userId = new ObjectId(session.user.id);
 
     const profile = await db
-      .collection<TrainerProfileWithId>("trainer_profiles")
+      .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
       .findOne({ userId });
 
     if (!profile) {
@@ -237,8 +237,8 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
       const now = new Date();
       const membership = await db.collection("memberships").findOne(
         {
-        status: "active",
-        $or: [{ userId: memberId }, { userId: session.user.id }],
+          status: "active",
+          $or: [{ userId: memberId }, { userId: session.user.id }],
         },
         { sort: { updatedAt: -1 } }
       );
@@ -266,7 +266,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Check if trainer exists and is active
       const trainer = await db
-        .collection<TrainerProfileWithId>("trainer_profiles")
+        .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
         .findOne({ _id: new ObjectId(trainerId), isActive: true });
 
       if (!trainer) {
@@ -276,7 +276,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Check if trainer has capacity
       const activeCount = await db
-        .collection<TrainerAssignment>("trainer_assignments")
+        .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
         .countDocuments({
           trainerId: trainer._id,
           status: "active",
@@ -289,7 +289,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Check if member already has active assignment
       const existingAssignment = await db
-        .collection<TrainerAssignment>("trainer_assignments")
+        .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
         .findOne({
           memberId,
           status: "active",
@@ -301,7 +301,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
       }
 
       // Create assignment
-      const assignment: TrainerAssignment = {
+      const assignment: TrainerAssignment<ObjectId> = {
         trainerId: trainer._id,
         memberId,
         membershipId: membership._id,
@@ -317,7 +317,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
       };
 
       await db
-        .collection<TrainerAssignment>("trainer_assignments")
+        .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
         .insertOne(assignment);
 
       return { message: await translate("API.success.trainerRequestSent") };
@@ -343,7 +343,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     // Get trainer profile
     const profile = await db
-      .collection<TrainerProfile>("trainer_profiles")
+      .collection<TrainerProfile<ObjectId>>("trainer_profiles")
       .findOne({ userId });
 
     if (!profile) {
@@ -353,7 +353,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     // Get pending requests for this trainer
     const requests = await db
-      .collection<TrainerAssignment>("trainer_assignments")
+      .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
       .find({ trainerId: profile._id, status: "pending" })
       .sort({ createdAt: -1 })
       .toArray();
@@ -367,14 +367,23 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
         );
         return {
           ...request,
+          _id: request._id.toString(),
+          trainerId: request.trainerId.toString(),
+          memberId: request.memberId.toString(),
+          membershipId: request.membershipId.toString(),
+          packageId: request.packageId.toString(),
+          createdAt: request.createdAt.toISOString(),
+          updatedAt: request.updatedAt.toISOString(),
+          startDate: request.startDate.toISOString(),
+          endDate: request.endDate ? request.endDate.toISOString() : null,
           member: member
             ? {
-                id: member._id.toString(),
-                name: member.name,
-                email: member.email,
-                image: member.image,
-                memberCode: member.memberCode,
-              }
+              id: member._id.toString(),
+              name: member.name?.toString(),
+              email: member.email?.toString(),
+              image: member.image?.toString(),
+              memberCode: member.memberCode,
+            }
             : null,
         };
       })
@@ -396,7 +405,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     // Get trainer profile
     const profile = await db
-      .collection<TrainerProfile>("trainer_profiles")
+      .collection<TrainerProfile<ObjectId>>("trainer_profiles")
       .findOne({ userId });
 
     if (!profile) {
@@ -406,7 +415,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     // Verify assignment belongs to this trainer and is pending
     const assignment = await db
-      .collection<TrainerAssignment>("trainer_assignments")
+      .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
       .findOne({
         _id: new ObjectId(params.id),
         trainerId: profile._id,
@@ -420,7 +429,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     // Check capacity
     const activeCount = await db
-      .collection<TrainerAssignment>("trainer_assignments")
+      .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
       .countDocuments({
         trainerId: profile._id,
         status: "active",
@@ -433,7 +442,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     // Accept request
     await db
-      .collection<TrainerAssignment>("trainer_assignments")
+      .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
       .updateOne(
         { _id: new ObjectId(params.id) },
         {
@@ -463,7 +472,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Get trainer profile
       const profile = await db
-        .collection<TrainerProfile>("trainer_profiles")
+        .collection<TrainerProfile<ObjectId>>("trainer_profiles")
         .findOne({ userId });
 
       if (!profile) {
@@ -473,7 +482,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Verify assignment belongs to this trainer and is pending
       const assignment = await db
-        .collection<TrainerAssignment>("trainer_assignments")
+        .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
         .findOne({
           _id: new ObjectId(params.id),
           trainerId: profile._id,
@@ -487,7 +496,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Reject request
       await db
-        .collection<TrainerAssignment>("trainer_assignments")
+        .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
         .updateOne(
           { _id: new ObjectId(params.id) },
           {
@@ -524,7 +533,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     // Get current assignment (active, pending, or rejected)
     const assignment = await db
-      .collection<TrainerAssignmentWithId>("trainer_assignments")
+      .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
       .findOne({
         memberId,
         status: { $in: ["active", "pending", "rejected"] },
@@ -538,17 +547,17 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     // Get trainer info
     const trainer = await db
-      .collection<TrainerProfileWithId>("trainer_profiles")
+      .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
       .findOne({ _id: assignment.trainerId });
 
     // Get trainer's user info
     const trainerUser = trainer
       ? await db
-          .collection("user")
-          .findOne(
-            { _id: trainer.userId },
-            { projection: { name: 1, email: 1, image: 1 } }
-          )
+        .collection("user")
+        .findOne(
+          { _id: trainer.userId },
+          { projection: { name: 1, email: 1, image: 1 } }
+        )
       : null;
 
     // Get package info
@@ -576,7 +585,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     // Get trainer profile
     const profile = await db
-      .collection<TrainerProfileWithId>("trainer_profiles")
+      .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
       .findOne({ userId });
 
     if (!profile) {
@@ -586,7 +595,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     // Get assignments
     const assignments = await db
-      .collection<TrainerAssignmentWithId>("trainer_assignments")
+      .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
       .find({ trainerId: profile._id, status: "active" })
       .toArray();
 
@@ -624,7 +633,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Get trainer profile
       const profile = await db
-        .collection<TrainerProfileWithId>("trainer_profiles")
+        .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
         .findOne({ userId });
 
       if (!profile) {
@@ -634,7 +643,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Verify assignment belongs to this trainer
       const assignment = await db
-        .collection<TrainerAssignmentWithId>("trainer_assignments")
+        .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
         .findOne({
           _id: new ObjectId(assignmentId),
           trainerId: profile._id,
@@ -648,7 +657,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Create training session
       const now = new Date();
-      const trainingSession: TrainingSession = {
+      const trainingSession: TrainingSession<ObjectId> = {
         assignmentId: assignment._id,
         trainerId: profile._id,
         memberId: assignment.memberId,
@@ -664,7 +673,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
       };
 
       await db
-        .collection<TrainingSession>("training_sessions")
+        .collection<TrainingSession<ObjectId>>("training_sessions")
         .insertOne(trainingSession);
 
       return { message: await translate("API.success.sessionScheduled") };
@@ -709,7 +718,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Get trainer profile
       const profile = await db
-        .collection<TrainerProfileWithId>("trainer_profiles")
+        .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
         .findOne({ userId });
 
       if (!profile) {
@@ -719,7 +728,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Get session
       const trainingSession = await db
-        .collection<TrainingSessionWithId>("training_sessions")
+        .collection<TrainingSessionWithId<ObjectId>>("training_sessions")
         .findOne({
           _id: new ObjectId(id),
           trainerId: profile._id,
@@ -801,7 +810,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Get session
       const trainingSession = await db
-        .collection<TrainingSessionWithId>("training_sessions")
+        .collection<TrainingSessionWithId<ObjectId>>("training_sessions")
         .findOne({
           _id: new ObjectId(id),
           memberId,
@@ -815,7 +824,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Update feedback
       await db
-        .collection<TrainingSession>("training_sessions")
+        .collection<TrainingSession<ObjectId>>("training_sessions")
         .updateOne(
           { _id: new ObjectId(id) },
           {
@@ -852,7 +861,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
     const memberId = new ObjectId(session.user.id);
 
     const sessions = await db
-      .collection<TrainingSessionWithId>("training_sessions")
+      .collection<TrainingSessionWithId<ObjectId>>("training_sessions")
       .find({ memberId })
       .sort({ sessionDate: -1 })
       .toArray();
@@ -860,7 +869,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
     // Get trainer info for each session
     const trainerIds = [...new Set(sessions.map((s) => s.trainerId))];
     const trainers = await db
-      .collection<TrainerProfileWithId>("trainer_profiles")
+      .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
       .find({ _id: { $in: trainerIds } })
       .toArray();
 
@@ -887,7 +896,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
     // Get trainer profile
     const profile = await db
-      .collection<TrainerProfileWithId>("trainer_profiles")
+      .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
       .findOne({ userId });
 
     if (!profile) {
@@ -896,7 +905,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
     }
 
     const sessions = await db
-      .collection<TrainingSessionWithId>("training_sessions")
+      .collection<TrainingSessionWithId<ObjectId>>("training_sessions")
       .find({ trainerId: profile._id })
       .sort({ sessionDate: -1 })
       .toArray();
@@ -942,16 +951,16 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
       const user = await db.collection("user").findOne({ _id: userId });
       const isAdmin = user?.role === "admin";
 
-      let assignment: TrainerAssignmentWithId | null = null;
+      let assignment: TrainerAssignmentWithId<ObjectId> | null = null;
 
       if (isAdmin) {
         assignment = await db
-          .collection<TrainerAssignmentWithId>("trainer_assignments")
+          .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
           .findOne({ _id: new ObjectId(id) });
       } else {
         // Check if this is the assigned trainer
         const profile = await db
-          .collection<TrainerProfileWithId>("trainer_profiles")
+          .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
           .findOne({ userId });
 
         if (!profile) {
@@ -960,7 +969,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
         }
 
         assignment = await db
-          .collection<TrainerAssignmentWithId>("trainer_assignments")
+          .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
           .findOne({
             _id: new ObjectId(id),
             trainerId: profile._id,
@@ -974,7 +983,7 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
 
       // Cancel assignment
       await db
-        .collection<TrainerAssignment>("trainer_assignments")
+        .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
         .updateOne(
           { _id: new ObjectId(id) },
           {

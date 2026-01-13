@@ -73,7 +73,7 @@ export default function TrainersPage() {
       {/* Trainers Grid */}
       {trainers && trainers.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {trainers.map((trainer: any) => (
+          {trainers.map((trainer) => (
             <TrainerCard key={trainer._id} trainer={trainer} />
           ))}
         </div>

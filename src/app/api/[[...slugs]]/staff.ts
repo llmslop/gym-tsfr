@@ -157,7 +157,7 @@ export const staffRouter = new Elysia({ prefix: "/staff" })
         return { message: await translate("API.errors.unauthorized") };
       }
       
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         updatedAt: new Date(),
       };
       
@@ -334,16 +334,17 @@ export const staffRouter = new Elysia({ prefix: "/staff" })
       return { message: await translate("API.errors.unauthorized") };
     }
     
-    const filter: any = {};
+    const filter: Record<string, unknown> = {};
     
     if (query.staffId) {
       filter.staffId = new ObjectId(query.staffId);
     }
     
     if (query.from || query.to) {
-      filter.checkInTime = {};
-      if (query.from) filter.checkInTime.$gte = new Date(query.from);
-      if (query.to) filter.checkInTime.$lte = new Date(query.to);
+      const checkInTimeFilter: Record<string, Date> = {};
+      if (query.from) checkInTimeFilter.$gte = new Date(query.from);
+      if (query.to) checkInTimeFilter.$lte = new Date(query.to);
+      filter.checkInTime = checkInTimeFilter;
     }
     
     const attendance = await db

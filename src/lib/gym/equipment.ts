@@ -1,5 +1,3 @@
-import { ObjectId } from "mongodb";
-
 export type Equipment<IdType = string> = {
   roomId: IdType;
   name: string;

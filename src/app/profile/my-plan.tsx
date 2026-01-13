@@ -4,6 +4,20 @@ import { api } from "@/lib/eden";
 import { useRouter } from "@/i18n/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { Package } from "@/lib/gym/package";
+import { PaymentWithId } from "@/lib/gym/trainer";
+
+type Membership = {
+  _id: string;
+  userId: string;
+  packageId: string;
+  kind: string;
+  sessionsRemaining?: number;
+  startAt: Date | string;
+  endAt: Date | string;
+  status: string;
+  createdAt: Date | string;
+};
 
 function formatMoney(price: number) {
   return new Intl.NumberFormat("vi-VN", {
@@ -12,7 +26,7 @@ function formatMoney(price: number) {
   }).format(price);
 }
 
-function formatDateTime(value: any) {
+function formatDateTime(value: Date | string | number) {
   const d = value instanceof Date ? value : new Date(value);
   return new Intl.DateTimeFormat("vi-VN", {
     year: "numeric",
@@ -52,8 +66,8 @@ export function MyPlan() {
     );
   }
 
-  const membership = data.membership as any;
-  const pkg = data.package as any;
+  const membership = data.membership as Membership;
+  const pkg = data.package as Package;
 
   if (!membership || !pkg) {
     return (
@@ -119,7 +133,7 @@ export function MyPlan() {
                 </tr>
               </thead>
               <tbody>
-                {data.payments.map((p: any) => (
+                {data.payments.map((p: PaymentWithId) => (
                   <tr key={p._id}>
                     <td className="font-mono">{p.receiptNo}</td>
                     <td>{formatMoney(p.amount)}</td>

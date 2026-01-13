@@ -67,22 +67,24 @@ export default function RegisterPage({
 
   const confirmPassword = useWatch({ name: "confirmPassword", control });
 
-  const [_, setPendingEmail] = useSessionStorage("pendingEmail", "");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const router = useRouter();
   const toast = useToast();
+  const [_, setPendingEmail] = useSessionStorage("pendingEmail", "");
 
   const { mutate: onSubmit, isPending } = useMutation({
     mutationFn: async (formData: z.infer<typeof formSchema>) => {
-      await authClient.signUp.email({
+      const { error } = await authClient.signUp.email({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         phoneNumber: formData.phoneNumber,
         callbackURL: "/auth/login",
       });
+      if (error) throw new Error(error.message);
+      setPendingEmail(formData.email);
     },
     onSuccess: () => router.push("/auth/register-done"),
     onError: (error) => {

@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useState } from "react";
-import { useLocalStorage, useMediaQuery } from "usehooks-ts";
+import { useLocalStorage } from "usehooks-ts";
 
 export enum Theme {
   LIGHT = "lemonade",

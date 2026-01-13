@@ -59,7 +59,7 @@ export default function UpdatePackageForm({
       });
 
       if (res.status !== 200) {
-        const errorMsg = (res as any).error?.value?.message || "Failed to update package";
+        const errorMsg = (res as { error?: { value?: { message?: string } } }).error?.value?.message || "Failed to update package";
         throw new Error(errorMsg);
       }
       return res.data;

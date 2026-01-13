@@ -86,7 +86,7 @@ export default function FeedbackThreadPage({
   }, [id, queryClient]);
 
   return (
-    <div className="max-w-screen">
+    <div className="w-full max-w-7xl mx-auto">
       {error && (
         <p className="text-error">
           Error loading feedback thread: {error.message}

@@ -31,10 +31,11 @@ export default function LoginPage() {
 
   const { mutate: onSubmit, isPending } = useMutation({
     mutationFn: async (formData: z.infer<typeof formSchema>) => {
-      await authClient.requestPasswordReset({
+      const {error} = await authClient.requestPasswordReset({
         email: formData.email,
         redirectTo: "/auth/reset-password",
       });
+      if(error) throw new Error(error.message);
     },
     onSuccess: () => {
       router.push("/auth/forgot-password-done");

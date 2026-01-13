@@ -152,6 +152,7 @@
   },
   "Navigation": {
     "dashboard": "Dashboard",
+    "qrScan": "QR Scan",
     "rooms": "Rooms",
     "trainers": "Trainers",
     "memberships": "Memberships",

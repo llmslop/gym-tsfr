@@ -20,6 +20,7 @@ function QRCodeSection({
       setSeconds(QRCODE_TIMEOUT / 1000);
       const qrcode = await api.events.qrcode.get();
       if (qrcode.status === 200) return qrcode.data!.url;
+      throw new Error("Failed to fetch QR code");
     },
     refetchInterval: QRCODE_TIMEOUT,
   });

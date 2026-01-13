@@ -43,14 +43,14 @@ export default function LoginPage() {
 
   const { mutate: onSubmit, isPending } = useMutation({
     mutationFn: async (formData: z.infer<typeof formSchema>) => {
-      await authClient.signIn.email(
+      const { error } = await authClient.signIn.email(
         {
           email: formData.email,
           password: formData.password,
           callbackURL: "/",
         },
-        {},
       );
+      if (error) throw new Error(error.message);
     },
     onError: (error) => {
       toast({ type: "error", message: error.message });

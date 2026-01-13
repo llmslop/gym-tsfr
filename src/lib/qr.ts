@@ -1,114 +1,155 @@
-import { createHmac, randomBytes } from "crypto";
+import { auth } from "./auth";
 
-export const QRCODE_TIMEOUT = 15 * 1000;
+export const QRCODE_TIMEOUT = 60 * 1000;
 
 export type QRPayload = {
   userId: string;
+  userName: string;
   exp: number;
   nonce: string;
 };
 
-function utf8(str: string): Uint8Array {
-  return new TextEncoder().encode(str);
-}
+export class QRSigner {
+  privateKey?: CryptoKey;
+  publicKey: CryptoKey;
 
-class QrSigner {
-  key: CryptoKey;
-
-  constructor(key: CryptoKey) {
-    this.key = key;
+  constructor(opts: { privateKey?: CryptoKey; publicKey: CryptoKey }) {
+    this.privateKey = opts.privateKey;
+    this.publicKey = opts.publicKey;
   }
 
-  async sign(message: string) {
+  /* ---------------- signing ---------------- */
+
+  async sign(message: string): Promise<string> {
+    if (!this.privateKey) {
+      throw new Error("Private key not available for signing");
+    }
+
     const signature = await crypto.subtle.sign(
-      "HMAC",
-      this.key,
+      { name: "Ed25519" },
+      this.privateKey,
       Buffer.from(message, "utf-8"),
     );
 
     return new Uint8Array(signature).toBase64({ alphabet: "base64url" });
   }
 
-  verify(message: string, signature: string) {
+  /* ---------------- verify ---------------- */
+
+  async verify(message: string, signature: string): Promise<boolean> {
     return crypto.subtle.verify(
-      "HMAC",
-      this.key,
-      Buffer.from(signature, "base64url"),
-      Buffer.from(message, "utf-8"),
+      { name: "Ed25519" },
+      this.publicKey,
+      Uint8Array.fromBase64(signature, { alphabet: "base64url" }),
+      new TextEncoder().encode(message),
     );
   }
 
-  static async fromSecret(secret: string) {
-    const key = await crypto.subtle.importKey(
-      "raw",
-      Buffer.from(secret, "base64url"),
-      {
-        name: "HMAC",
-        hash: "SHA-256",
-      },
+  /* ---------------- payload ---------------- */
+
+  generateQRPayload(session: typeof auth.$Infer.Session): QRPayload {
+    const nonce = new Uint8Array(16);
+    crypto.getRandomValues(nonce);
+
+    return {
+      userId: session.user.id,
+      userName: session.user.name,
+      exp: Date.now() + QRCODE_TIMEOUT,
+      nonce: nonce.toBase64({ alphabet: "base64url" }),
+    };
+  }
+
+  /* ---------------- token ---------------- */
+
+  async generateToken(session: typeof auth.$Infer.Session): Promise<string> {
+    const payload = this.generateQRPayload(session);
+    const payloadJson = JSON.stringify(payload);
+    const payloadBase64 = new TextEncoder()
+      .encode(payloadJson)
+      .toBase64({ alphabet: "base64url" });
+
+    const signature = await this.sign(payloadBase64);
+    return `${payloadBase64}.${signature}`;
+  }
+
+  async generateUrl(
+    session: typeof auth.$Infer.Session,
+    baseUrl: string,
+  ): Promise<string> {
+    const token = await this.generateToken(session);
+    const url = new URL(baseUrl);
+    url.searchParams.set("token", token);
+    return url.toString();
+  }
+
+  async verifyToken(token: string, expCheck?: boolean): Promise<QRPayload> {
+    const parts = token.split(".");
+    if (parts.length !== 2) throw new Error("Invalid QR token");
+
+    const [payloadB64, sigB64] = parts;
+
+    const ok = await this.verify(payloadB64, sigB64);
+    if (!ok) throw new Error("Invalid signature");
+
+    const payload = JSON.parse(
+      new TextDecoder().decode(
+        Uint8Array.fromBase64(payloadB64, { alphabet: "base64url" }),
+      ),
+    ) as QRPayload;
+
+    // since the server and scanner might have slight time differences,
+    // we make the expiration check optional
+    if (expCheck !== false && payload.exp < Date.now())
+      throw new Error("Expired signature");
+
+    return payload;
+  }
+
+  async verifyUrl(url: string, expCheck?: boolean): Promise<QRPayload> {
+    // TODO: maybe filter hostname and etc?
+    // tbh not really necessary since the token itself is signed
+    const urlObj = new URL(url);
+    const token = urlObj.searchParams.get("token");
+    if (!token) throw new Error("No token in URL");
+    return await this.verifyToken(token, expCheck);
+  }
+
+  /* ---------------- factories ---------------- */
+
+  /** Server-side: private + public key */
+  static async fromPrivateKey(
+    privateKeyBase64: string,
+    publicKeyBase64: string,
+  ) {
+    const privateKey = await crypto.subtle.importKey(
+      "pkcs8",
+      Buffer.from(privateKeyBase64, "base64"),
+      { name: "Ed25519" },
       false,
       ["sign"],
     );
 
-    return new QrSigner(key);
+    const publicKey = await crypto.subtle.importKey(
+      "spki",
+      Buffer.from(publicKeyBase64, "base64"),
+      { name: "Ed25519" },
+      false,
+      ["verify"],
+    );
+
+    return new QRSigner({ privateKey, publicKey });
   }
-}
 
-async function createHmacSHA256(
-  secret: string,
-  message: string,
-): Promise<string> {
-  // Import the secret key
-}
+  /** Scanner-side: public key only */
+  static async fromPublicKey(publicKeyBase64: string) {
+    const publicKey = await crypto.subtle.importKey(
+      "spki",
+      Buffer.from(publicKeyBase64, "base64"),
+      { name: "Ed25519" },
+      false,
+      ["verify"],
+    );
 
-async function verifyHmacSHA256(
-  secret: string,
-  message: string,
-  signature: string,
-) {
-  const key = await crypto.subtle.importKey(
-    "raw",
-    Buffer.from(secret, "base64url"),
-    {
-      name: "HMAC",
-      hash: "SHA-256",
-    },
-    false, // not extractable
-    ["sign"],
-  );
-}
-
-export function generateQRPayload(userId: string): QRPayload {
-  const nonce = new Uint8Array(16);
-  crypto.getRandomValues(nonce);
-
-  return {
-    userId,
-    exp: Date.now() + QRCODE_TIMEOUT,
-    nonce: nonce.toBase64({ alphabet: "base64url" }),
-  };
-}
-
-export async function generateQRToken(
-  userId: string,
-  secret: string,
-): Promise<string> {
-  const payloadJson = JSON.stringify(generateQRPayload(userId));
-  const payloadBase64 = Buffer.from(payloadJson, "utf8").toString("base64url");
-  const signature = await createHmacSHA256(secret, payloadBase64);
-  return `${payloadBase64}.${signature}`;
-}
-
-export async function verifyQRToken(
-  token: string,
-  secret: string,
-): Promise<string> {
-  const parts = token.split(".");
-  if (parts.length !== 2) throw new Error("Invalid QR token");
-  await verifyHmacSHA256(secret, parts[0], parts[1]);
-  const payload = JSON.parse(
-    Buffer.from(parts[0], "base64url").toString(),
-  ) as QRPayload;
-  if (payload.exp > Date.now()) throw new Error("Expired signature");
-  return payload.userId;
+    return new QRSigner({ publicKey });
+  }
 }

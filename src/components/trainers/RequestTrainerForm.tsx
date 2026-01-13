@@ -38,13 +38,13 @@ export default function RequestTrainerForm({
     mutationFn: async (data: RequestTrainerFormData) => {
       const response = await api.trainers.request.post(data);
       if (response.error) {
-        const value = (response.error as any).value;
-        const status = (response.error as any).status as number | undefined;
+        const value = (response.error as { value?: string | { message?: string }; status?: number }).value;
+        const status = (response.error as { status?: number }).status;
 
         const message =
           typeof value === "string"
             ? value
-            : value?.message
+            : value && typeof value === "object" && "message" in value
               ? String(value.message)
               : `Request failed${status ? ` (${status})` : ""}`;
 

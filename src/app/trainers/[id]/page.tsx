@@ -5,6 +5,7 @@ import { api } from "@/lib/eden";
 import { useParams } from "next/navigation";
 import RequestTrainerForm from "@/components/trainers/RequestTrainerForm";
 import { useState } from "react";
+import { Link } from "@/i18n/navigation";
 
 export default function TrainerDetailPage() {
   const params = useParams();
@@ -32,7 +33,7 @@ export default function TrainerDetailPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="alert alert-error">
-          <span>{'message' in (trainer || {}) ? (trainer as any).message : 'Trainer not found'}</span>
+          <span>{'message' in (trainer || {}) ? (trainer as { message: string }).message : 'Trainer not found'}</span>
         </div>
       </div>
     );
@@ -44,9 +45,9 @@ export default function TrainerDetailPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Back Button */}
-      <a href="/trainers" className="btn btn-ghost mb-4">
+      <Link href="/trainers" className="btn btn-ghost mb-4">
         ← Back to Trainers
-      </a>
+      </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Info */}
@@ -152,7 +153,7 @@ export default function TrainerDetailPage() {
               <div className="card-body">
                 <h2 className="card-title">Availability</h2>
                 <div className="space-y-2">
-                  {trainer.availability.map((slot: any, idx: number) => (
+                  {trainer.availability.map((slot: { dayOfWeek: number; startTime: string; endTime: string }, idx: number) => (
                     <div
                       key={idx}
                       className="flex justify-between items-center p-3 bg-base-200 rounded"

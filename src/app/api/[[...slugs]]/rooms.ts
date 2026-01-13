@@ -9,16 +9,14 @@ import { t as translate } from "@/lib/i18n-server";
 
 export const roomsRouter = new Elysia({ prefix: "/rooms" })
   .get("/list", async ({ status, request: { headers } }) => {
-    if ((await checkPerm(headers, status, { rooms: ["read"] })) === undefined)
-      return;
+    await checkPerm(headers, status, { rooms: ["read"] });
     const allRooms = await db.collection("rooms").find().toArray();
     // technically unsafe cast, but the MongoDB ObjectID will be casted into
     // strings after the JSON roundtrip
     return allRooms as unknown as RoomWithId[];
   })
   .get("/:id", async ({ params: { id }, request: { headers }, status }) => {
-    if ((await checkPerm(headers, status, { rooms: ["read"] })) === undefined)
-      return;
+    await checkPerm(headers, status, { rooms: ["read"] });
     const room = await db
       .collection("rooms")
       .findOne({ _id: new ObjectId(id) });
@@ -35,11 +33,7 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
       query: { offset, limit },
       status,
     }) => {
-      if (
-        (await checkPerm(headers, status, { equipments: ["read"] })) ===
-        undefined
-      )
-        return;
+      await checkPerm(headers, status, { equipments: ["read"] });
       const data = await db
         .collection("equipments")
         .find({ roomId: new ObjectId(id) })
@@ -70,10 +64,7 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
       status,
       request: { headers },
     }) => {
-      if (
-        (await checkPerm(headers, status, { rooms: ["update"] })) === undefined
-      )
-        return;
+      await checkPerm(headers, status, { rooms: ["update"] });
       const now = new Date();
       const result = await db.collection("rooms").updateOne(
         { _id: new ObjectId(id) },
@@ -108,11 +99,7 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
       body: { newRoomId, name, quantity, origin, warrantyUntil, isActive },
       request: { headers },
     }) => {
-      if (
-        (await checkPerm(headers, status, { equipments: ["update"] })) ===
-        undefined
-      )
-        return;
+      await checkPerm(headers, status, { equipments: ["update"] });
 
       const roomId = newRoomId ?? id;
       const now = new Date();
@@ -152,8 +139,7 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
     },
   )
   .delete("/:id", async ({ params: { id }, status, request: { headers } }) => {
-    if ((await checkPerm(headers, status, { rooms: ["delete"] })) === undefined)
-      return;
+    await checkPerm(headers, status, { rooms: ["delete"] });
     const result = await db
       .collection("rooms")
       .deleteOne({ _id: new ObjectId(id) });
@@ -165,11 +151,7 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
   .delete(
     "/:id/equipments/:equipmentId",
     async ({ params: { id, equipmentId }, status, request: { headers } }) => {
-      if (
-        (await checkPerm(headers, status, { equipments: ["delete"] })) ===
-        undefined
-      )
-        return;
+      await checkPerm(headers, status, { equipments: ["delete"] });
       const result = await db.collection("equipments").findOneAndDelete({
         _id: new ObjectId(equipmentId),
         roomId: new ObjectId(id),
@@ -187,10 +169,7 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
       body: { name, type, isActive },
       request: { headers },
     }) => {
-      if (
-        (await checkPerm(headers, status, { rooms: ["create"] })) === undefined
-      )
-        return;
+      await checkPerm(headers, status, { rooms: ["create"] });
 
       const counter = await db
         .collection<{ _id: string; seq: number }>("counters")
@@ -234,11 +213,7 @@ export const roomsRouter = new Elysia({ prefix: "/rooms" })
       body: { name, quantity, origin, warrantyUntil, isActive },
       request: { headers },
     }) => {
-      if (
-        (await checkPerm(headers, status, { equipments: ["create"] })) ===
-        undefined
-      )
-        return;
+      await checkPerm(headers, status, { equipments: ["create"] });
 
       const now = new Date();
 

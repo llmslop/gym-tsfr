@@ -6,6 +6,7 @@ import { t as translate } from "@/lib/i18n-server";
 type RoomPerm = (typeof statement)["rooms"][number];
 type EquipmentPerm = (typeof statement)["equipments"][number];
 type FeedbackPerm = (typeof statement)["feedbacks"][number];
+type EventPerm = (typeof statement)["events"][number];
 
 // undefined: no session or no permission
 // null: no session, but still authorized as guest
@@ -17,6 +18,7 @@ export const checkPerm = async (
     rooms?: RoomPerm[];
     equipments?: EquipmentPerm[];
     feedbacks?: FeedbackPerm[];
+    events?: EventPerm[];
   },
 ) => {
   const session = await auth.api.getSession({ headers });

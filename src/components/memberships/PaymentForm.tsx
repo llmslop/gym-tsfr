@@ -48,7 +48,7 @@ export default function PaymentForm({
             });
 
             if (res.status !== 200 || !res.data) {
-                const msg = (res as any).error?.value?.message ?? "Payment failed";
+                const msg = (res as { error?: { value?: { message?: string } } }).error?.value?.message ?? "Payment failed";
                 throw new Error(msg);
             }
 
@@ -57,8 +57,9 @@ export default function PaymentForm({
             }
 
             onSuccess({ receiptNo: res.data.receiptNo, memberCode: res.data.memberCode });
-        } catch (err: any) {
-            toast({ type: "error", message: err?.message ?? "Payment failed" });
+        } catch (err) {
+            const error = err as Error;
+            toast({ type: "error", message: error?.message ?? "Payment failed" });
         } finally {
             setIsProcessing(false);
         }
