@@ -20,7 +20,6 @@ type CompleteSessionFormData = {
 };
 
 export default function CompleteSessionForm({
-  const t = useTranslations("Trainers.completeSession");
   sessionId,
   initialExercises,
   onSuccess,
@@ -29,6 +28,7 @@ export default function CompleteSessionForm({
   initialExercises: Exercise[];
   onSuccess?: () => void;
 }) {
+  const t = useTranslations("Trainers.completeSession");
   const toast = useToast();
   
   const {

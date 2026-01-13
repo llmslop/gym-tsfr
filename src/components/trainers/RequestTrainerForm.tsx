@@ -12,7 +12,6 @@ type RequestTrainerFormData = {
 };
 
 export default function RequestTrainerForm({
-  const t = useTranslations("Trainers.requestTrainer");
   trainerId,
   trainerName,
   onSuccess,
@@ -21,6 +20,7 @@ export default function RequestTrainerForm({
   trainerName: string;
   onSuccess?: () => void;
 }) {
+  const t = useTranslations("Trainers.requestTrainer");
   const toast = useToast();
   
   const {

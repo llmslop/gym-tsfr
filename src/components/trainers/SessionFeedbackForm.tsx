@@ -12,7 +12,6 @@ type SessionFeedbackFormData = {
 };
 
 export default function SessionFeedbackForm({
-  const t = useTranslations("Trainers.sessionFeedback");
   sessionId,
   trainerName,
   onSuccess,
@@ -21,6 +20,7 @@ export default function SessionFeedbackForm({
   trainerName: string;
   onSuccess?: () => void;
 }) {
+  const t = useTranslations("Trainers.sessionFeedback");
   const toast = useToast();
   
   const {

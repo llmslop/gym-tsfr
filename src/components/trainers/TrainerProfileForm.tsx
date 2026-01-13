@@ -47,14 +47,14 @@ const SPECIALIZATIONS = [
 const CERTIFICATIONS_PLACEHOLDER = "NASM-CPT, ISSA Certified, ACE Certified";
 
 export default function TrainerProfileForm({
-  const t = useTranslations("Trainers.trainerProfile");
-  const daysOfWeek = useDaysOfWeek();
   onSuccess,
 }: {
   onSuccess?: () => void;
 }) {
   const toast = useToast();
-  
+  const t = useTranslations("Trainers.trainerProfile");
+  const daysOfWeek = useDaysOfWeek();
+
   // Fetch existing profile
   const { data: profile } = useQuery({
     queryKey: ["trainer-profile", "me"],
@@ -233,7 +233,7 @@ export default function TrainerProfileForm({
       {/* Experience and Settings */}
       <div className="space-y-3">
         <h3 className="text-xl font-bold text-base-content">Professional Details</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Years of Experience */}
           <div className="form-control">
@@ -264,8 +264,8 @@ export default function TrainerProfileForm({
             </label>
             <input
               type="number"
-              {...register("maxClients", { 
-                required: "Required", 
+              {...register("maxClients", {
+                required: "Required",
                 min: { value: 1, message: "Must be at least 1" },
                 valueAsNumber: true,
               })}

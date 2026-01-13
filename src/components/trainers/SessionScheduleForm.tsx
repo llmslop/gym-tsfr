@@ -22,7 +22,6 @@ type SessionScheduleFormData = {
 };
 
 export default function SessionScheduleForm({
-  const t = useTranslations("Trainers.sessionSchedule");
   assignmentId,
   memberName,
   onSuccess,
@@ -31,6 +30,7 @@ export default function SessionScheduleForm({
   memberName: string;
   onSuccess?: () => void;
 }) {
+  const t = useTranslations("Trainers.sessionSchedule");
   const toast = useToast();
   
   const {
