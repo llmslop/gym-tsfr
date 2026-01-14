@@ -31,7 +31,7 @@ export default function AdminPage() {
   const toast = useToast();
   const queryClient = useQueryClient();
   
-  const [activeTab, setActiveTab] = useState<"users" | "staff" | "attendance">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "staff">("users");
   const [showStaffForm, setShowStaffForm] = useState(false);
   const [staffFormData, setStaffFormData] = useState({
     userId: "",
@@ -63,24 +63,6 @@ export default function AdminPage() {
       return res.data as StaffProfile[];
     },
     enabled: session?.user?.role === "admin" && activeTab === "staff",
-  });
-
-  // Fetch attendance
-  const { data: attendance, isLoading: attendanceLoading } = useQuery({
-    queryKey: ["admin", "attendance"],
-    queryFn: async () => {
-      const res = await api.staff.attendance.all.get();
-      if (res.error) throw new Error(res.error.value as unknown as string);
-      return res.data as Array<{
-        _id: string;
-        user?: { name: string };
-        checkInTime: string;
-        checkOutTime?: string;
-        totalHours?: number;
-        status: string;
-      }>;
-    },
-    enabled: session?.user?.role === "admin" && activeTab === "attendance",
   });
 
   // Create staff mutation
@@ -159,12 +141,6 @@ export default function AdminPage() {
           onClick={() => setActiveTab("staff")}
         >
           Staff
-        </button>
-        <button
-          className={`tab ${activeTab === "attendance" ? "tab-active" : ""}`}
-          onClick={() => setActiveTab("attendance")}
-        >
-          Attendance
         </button>
       </div>
 
@@ -262,54 +238,6 @@ export default function AdminPage() {
                           "badge-ghost"
                         }`}>
                           {s.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Attendance Tab */}
-      {activeTab === "attendance" && (
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Attendance Records</h2>
-          
-          {attendanceLoading ? (
-            <div className="flex justify-center py-12">
-              <span className="loading loading-spinner loading-lg"></span>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="table table-zebra w-full">
-                <thead>
-                  <tr>
-                    <th>Staff Name</th>
-                    <th>Check In</th>
-                    <th>Check Out</th>
-                    <th>Hours</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {attendance?.map((a) => (
-                    <tr key={a._id}>
-                      <td>{a.user?.name}</td>
-                      <td>{new Date(a.checkInTime).toLocaleString()}</td>
-                      <td>
-                        {a.checkOutTime 
-                          ? new Date(a.checkOutTime).toLocaleString()
-                          : "-"}
-                      </td>
-                      <td>{a.totalHours?.toFixed(2) || "-"}</td>
-                      <td>
-                        <span className={`badge ${
-                          a.status === "present" ? "badge-success" : "badge-ghost"
-                        }`}>
-                          {a.status}
                         </span>
                       </td>
                     </tr>

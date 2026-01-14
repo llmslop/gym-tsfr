@@ -928,78 +928,85 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
     return sessionsWithMember;
   })
 
-  // DELETE /trainers/assignments/:id - Cancel assignment (Admin or Coach)
-  .delete(
-    "/assignments/:id",
-    async ({ params, set, request }) => {
-      const session = await auth.api.getSession({ headers: request.headers });
+  // DELETE /trainers/assignments/:id - Cancel assignment (Admin, Coach, or Member)
+.delete(
+  "/assignments/:id",
+  async ({ params, set, request }) => {
+    const session = await auth.api.getSession({ headers: request.headers });
 
-      if (!session?.user?.id) {
-        set.status = 401;
-        return { message: await translate("API.errors.unauthorized") };
-      }
+    if (!session?.user?.id) {
+      set.status = 401;
+      return { message: await translate("API.errors.unauthorized") };
+    }
 
-      const userId = new ObjectId(session.user.id);
-      const { id } = params;
+    const userId = new ObjectId(session.user.id);
+    const { id } = params;
 
-      if (!ObjectId.isValid(id)) {
-        set.status = 400;
-        return { message: await translate("API.errors.invalidAssignmentId") };
-      }
+    if (!ObjectId.isValid(id)) {
+      set.status = 400;
+      return { message: await translate("API.errors.invalidAssignmentId") };
+    }
 
-      // Check if user is admin or the assigned coach
-      const user = await db.collection("user").findOne({ _id: userId });
-      const isAdmin = user?.role === "admin";
+    // Check if user is admin, the assigned coach, or the member
+    const user = await db.collection("user").findOne({ _id: userId });
+    const isAdmin = user?.role === "admin";
 
-      let assignment: TrainerAssignmentWithId<ObjectId> | null = null;
+    let assignment: TrainerAssignmentWithId<ObjectId> | null = null;
 
-      if (isAdmin) {
-        assignment = await db
-          .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
-          .findOne({ _id: new ObjectId(id) });
-      } else {
-        // Check if this is the assigned trainer
-        const profile = await db
-          .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
-          .findOne({ userId });
+    if (isAdmin) {
+      // Admin can cancel any assignment
+      assignment = await db
+        .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
+        .findOne({ _id: new ObjectId(id) });
+    } else {
+      // Check if this is the assigned trainer or the member
+      const profile = await db
+        .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
+        .findOne({ userId });
 
-        if (!profile) {
-          set.status = 403;
-          return { message: await translate("API.errors.notAuthorized") };
-        }
-
+      if (profile) {
+        // User is a coach - check if they're assigned to this
         assignment = await db
           .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
           .findOne({
             _id: new ObjectId(id),
             trainerId: profile._id,
           });
+      } else {
+        // User might be the member - check if it's their assignment
+        assignment = await db
+          .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
+          .findOne({
+            _id: new ObjectId(id),
+            memberId: userId,
+          });
       }
-
-      if (!assignment) {
-        set.status = 404;
-        return { message: await translate("API.errors.assignmentNotFound") };
-      }
-
-      // Cancel assignment
-      await db
-        .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
-        .updateOne(
-          { _id: new ObjectId(id) },
-          {
-            $set: {
-              status: "cancelled",
-              endDate: new Date(),
-              updatedAt: new Date(),
-            },
-          }
-        );
-
-      return { message: await translate("API.success.assignmentCancelled") };
-    },
-    {
-      params: t.Object({
-        id: t.String(),
-      }),
     }
-  );
+
+    if (!assignment) {
+      set.status = 404;
+      return { message: await translate("API.errors.assignmentNotFound") };
+    }
+
+    // Cancel assignment
+    await db
+      .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
+      .updateOne(
+        { _id: new ObjectId(id) },
+        {
+          $set: {
+            status: "cancelled",
+            endDate: new Date(),
+            updatedAt: new Date(),
+          },
+        }
+      );
+
+    return { message: await translate("API.success.assignmentCancelled") };
+  },
+  {
+    params: t.Object({
+      id: t.String(),
+    }),
+  }
+);
