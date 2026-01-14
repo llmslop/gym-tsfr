@@ -19,6 +19,7 @@ import { eventsRouter } from "./event";
 import { membershipsRouter } from "./memberships";
 import { trainersRouter } from "./trainers";
 import { staffRouter } from "./staff";
+import { dashboardRouter } from "./dashboard";
 
 const app = new Elysia({ prefix: "/api" })
   .use(
@@ -38,6 +39,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(membershipsRouter)
   .use(trainersRouter)
   .use(staffRouter)
+  .use(dashboardRouter)
   .get("/admin/users", async ({ request }) => {
     const session = await auth.api.getSession({
       headers: request.headers,
@@ -71,7 +73,8 @@ const app = new Elysia({ prefix: "/api" })
       if (!session) throw Error("Unauthorized");
 
       const file = body.file;
-      const path = `user-avatars/${session?.user.id}/${crypto.randomUUID()}`;
+      const path = `user-avatars/${session.user.id}/${crypto.randomUUID()}`;
+
       await s3client.send(
         new PutObjectCommand({
           Bucket: S3_BUCKET_NAME,
@@ -82,17 +85,15 @@ const app = new Elysia({ prefix: "/api" })
         }),
       );
 
-      const oldUser = await db
-        .collection("user")
-        .findOneAndUpdate(
-          { _id: new ObjectId(session.user.id) },
-          { $set: { image: publicAccessUrl(path) } },
-        );
+      const oldUser = await db.collection("user").findOneAndUpdate(
+        { _id: new ObjectId(session.user.id) },
+        { $set: { image: publicAccessUrl(path) } },
+      );
 
-      if (oldUser !== null) {
+      if (oldUser?.image) {
         const key = keyFromPublicAccessUrl(oldUser.image as string);
-        if (key !== undefined) {
-          s3client.send(
+        if (key) {
+          await s3client.send(
             new DeleteObjectCommand({
               Bucket: S3_BUCKET_NAME,
               Key: key,
@@ -101,9 +102,7 @@ const app = new Elysia({ prefix: "/api" })
         }
       }
 
-      return {
-        avatarUrl: publicAccessUrl(path),
-      };
+      return { avatarUrl: publicAccessUrl(path) };
     },
     {
       body: z.object({
@@ -127,7 +126,7 @@ const app = new Elysia({ prefix: "/api" })
       if (!session) throw Error("Unauthorized");
 
       const file = body.file;
-      const path = `user-fingerprint/${session?.user.id}/${crypto.randomUUID()}`;
+      const path = `user-fingerprint/${session.user.id}/${crypto.randomUUID()}`;
 
       await s3client.send(
         new PutObjectCommand({
@@ -139,17 +138,15 @@ const app = new Elysia({ prefix: "/api" })
         }),
       );
 
-      const oldUser = await db
-        .collection("user")
-        .findOneAndUpdate(
-          { _id: new ObjectId(session.user.id) },
-          { $set: { fingerprint: publicAccessUrl(path) } },
-        );
+      const oldUser = await db.collection("user").findOneAndUpdate(
+        { _id: new ObjectId(session.user.id) },
+        { $set: { fingerprint: publicAccessUrl(path) } },
+      );
 
-      if (oldUser !== null) {
+      if (oldUser?.fingerprint) {
         const key = keyFromPublicAccessUrl(oldUser.fingerprint as string);
-        if (key !== undefined) {
-          s3client.send(
+        if (key) {
+          await s3client.send(
             new DeleteObjectCommand({
               Bucket: S3_BUCKET_NAME,
               Key: key,
@@ -158,9 +155,7 @@ const app = new Elysia({ prefix: "/api" })
         }
       }
 
-      return {
-        fingerprintFileUrl: publicAccessUrl(path),
-      };
+      return { fingerprintFileUrl: publicAccessUrl(path) };
     },
     {
       body: z.object({
