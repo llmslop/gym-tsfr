@@ -954,18 +954,15 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
     let assignment: TrainerAssignmentWithId<ObjectId> | null = null;
 
     if (isAdmin) {
-      // Admin can cancel any assignment
       assignment = await db
         .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
         .findOne({ _id: new ObjectId(id) });
     } else {
-      // Check if this is the assigned trainer or the member
       const profile = await db
         .collection<TrainerProfileWithId<ObjectId>>("trainer_profiles")
         .findOne({ userId });
 
       if (profile) {
-        // User is a coach - check if they're assigned to this
         assignment = await db
           .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
           .findOne({
@@ -973,7 +970,6 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
             trainerId: profile._id,
           });
       } else {
-        // User might be the member - check if it's their assignment
         assignment = await db
           .collection<TrainerAssignmentWithId<ObjectId>>("trainer_assignments")
           .findOne({
@@ -988,7 +984,6 @@ export const trainersRouter = new Elysia({ prefix: "/trainers" })
       return { message: await translate("API.errors.assignmentNotFound") };
     }
 
-    // Cancel assignment
     await db
       .collection<TrainerAssignment<ObjectId>>("trainer_assignments")
       .updateOne(

@@ -13,6 +13,7 @@ import { availableFeatures, featureCategories } from "@/lib/gym/features";
 const packageSchema = z.object({
   price: z.number().min(0, "Price must be positive"),
   isActive: z.boolean(),
+  isPopular: z.boolean(),
   features: z.array(z.string()).min(1, "Select at least one feature"),
 });
 
@@ -44,6 +45,7 @@ export default function UpdatePackageForm({
     defaultValues: {
       price: pkg.price,
       isActive: pkg.isActive,
+      isPopular: pkg.isPopular || false,
       features: pkg.features,
     },
   });
@@ -55,6 +57,7 @@ export default function UpdatePackageForm({
       const res = await api.packages({ id: pkg._id }).patch({
         price: data.price,
         isActive: data.isActive,
+        isPopular: data.isPopular,
         features: data.features,
       });
 
@@ -187,6 +190,23 @@ export default function UpdatePackageForm({
                 {...register("isActive")}
               />
               <span className="label-text">{t("isActive")}</span>
+            </label>
+          </div>
+
+          {/* Popular Status */}
+          <div className="form-control">
+            <label className="label cursor-pointer justify-start gap-4">
+              <input
+                type="checkbox"
+                className="checkbox checkbox-secondary"
+                {...register("isPopular")}
+              />
+              <span className="label-text">{t("isPopular")}</span>
+            </label>
+            <label className="label">
+              <span className="label-text-alt text-base-content/60">
+                {t("isPopularHint")}
+              </span>
             </label>
           </div>
 

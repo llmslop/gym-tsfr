@@ -40,8 +40,8 @@ function PricingCard({
 
   return (
     <div
-      className={`card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 ${
-        isPopular ? "border-2 border-primary scale-105" : ""
+      className={`card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 w-full ${
+        isPopular ? "border-2 border-primary" : ""
       }`}
     >
       {isPopular && (
@@ -271,17 +271,18 @@ export default function MembershipsPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div className="flex flex-wrap justify-center items-stretch gap-6 max-w-7xl mx-auto">
           {packages?.map((pkg) => (
-            <PricingCard
-              key={pkg._id}
-              package={pkg}
-              isPopular={pkg.duration === "3-months"}
-              isAdmin={hasAdminPrivilege}
-              onChoosePlan={() => handleChoosePlan(pkg)}
-              onEdit={() => handleEdit(pkg)}
-              onDelete={() => handleDelete(pkg)}
-            />
+            <div key={pkg._id} className="w-full md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] min-w-[280px] flex">
+              <PricingCard
+                package={pkg}
+                isPopular={pkg.isPopular || false}
+                isAdmin={hasAdminPrivilege}
+                onChoosePlan={() => handleChoosePlan(pkg)}
+                onEdit={() => handleEdit(pkg)}
+                onDelete={() => handleDelete(pkg)}
+              />
+            </div>
           ))}
         </div>
 

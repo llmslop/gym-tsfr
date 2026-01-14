@@ -18,6 +18,7 @@ export type Package<IdType = string> = {
   currency: string;
   features: string[];
   isActive: boolean;
+  isPopular?: boolean;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -30,6 +31,7 @@ export const defaultPackages: Omit<Package, "packageId" | "createdAt" | "updated
     price: 350000,
     currency: "VND",
     isActive: true,
+    isPopular: false,
     features: [
       "access_all_facilities",
       "basic_equipment",
@@ -42,6 +44,7 @@ export const defaultPackages: Omit<Package, "packageId" | "createdAt" | "updated
     price: 900000,
     currency: "VND",
     isActive: true,
+    isPopular: false,
     features: [
       "access_all_facilities",
       "all_equipment",
@@ -57,6 +60,7 @@ export const defaultPackages: Omit<Package, "packageId" | "createdAt" | "updated
     price: 2000000,
     currency: "VND",
     isActive: true,
+    isPopular: false,
     features: [
       "one_free_personal_training",
       "nutrition_consultation",
@@ -68,6 +72,7 @@ export const defaultPackages: Omit<Package, "packageId" | "createdAt" | "updated
     price: 500000,
     currency: "VND",
     isActive: true,
+    isPopular: false,
     features: [
       "access_all_facilities",
       "basic_equipment",
@@ -80,6 +85,7 @@ export const defaultPackages: Omit<Package, "packageId" | "createdAt" | "updated
     price: 1350000,
     currency: "VND",
     isActive: true,
+    isPopular: true,
     features: [
       "access_all_facilities",
       "basic_equipment",
@@ -94,6 +100,7 @@ export const defaultPackages: Omit<Package, "packageId" | "createdAt" | "updated
     price: 2500000,
     currency: "VND",
     isActive: true,
+    isPopular: false,
     features: [
       "access_all_facilities",
       "all_equipment",
@@ -110,6 +117,7 @@ export const defaultPackages: Omit<Package, "packageId" | "createdAt" | "updated
     price: 4500000,
     currency: "VND",
     isActive: true,
+    isPopular: false,
     features: [
       "access_all_facilities",
       "all_equipment",

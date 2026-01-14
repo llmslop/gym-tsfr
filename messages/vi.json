@@ -118,6 +118,8 @@
     "updateSuccess": "Cập nhật gói thành công!",
     "updateError": "Không thể cập nhật gói",
     "deleteSuccess": "Xóa gói thành công!",
+    "isPopular": "Đánh Dấu Phổ Biến Nhất",
+    "isPopularHint": "Chỉ một gói có thể được đánh dấu là phổ biến nhất tại một thời điểm",
     "deleteError": "Không thể xóa gói"
   },
   "Payment": {

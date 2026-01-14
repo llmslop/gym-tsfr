@@ -118,6 +118,8 @@
     "updateSuccess": "Package updated successfully!",
     "updateError": "Failed to update package",
     "deleteSuccess": "Package deleted successfully!",
+    "isPopular": "Mark as Most Popular",
+    "isPopularHint": "Only one package can be marked as most popular at a time",
     "deleteError": "Failed to delete package"
   },
   "Payment": {

@@ -77,6 +77,13 @@ export const packagesRouter = new Elysia({ prefix: "/packages" })
     async ({ body, request }) => {
       await requireAdmin(request);
 
+      // If creating a popular package, unset all other popular packages
+      if (body.isPopular) {
+        await db
+          .collection(PACKAGES_COLLECTION)
+          .updateMany({ isPopular: true }, { $set: { isPopular: false } });
+      }
+
       const newPackage = {
         packageId: `pkg-${body.duration}-${Date.now()}`,
         duration: body.duration,
@@ -84,6 +91,7 @@ export const packagesRouter = new Elysia({ prefix: "/packages" })
         currency: body.currency,
         features: body.features,
         isActive: body.isActive,
+        isPopular: body.isPopular || false,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -109,6 +117,7 @@ export const packagesRouter = new Elysia({ prefix: "/packages" })
         currency: t.String(),
         features: t.Array(t.String()),
         isActive: t.Boolean(),
+        isPopular: t.Optional(t.Boolean()),
       }),
     }
   )
@@ -117,10 +126,21 @@ export const packagesRouter = new Elysia({ prefix: "/packages" })
     async ({ params, body, request }) => {
       await requireAdmin(request);
 
+      // If setting this package as popular, unset all other popular packages
+      if (body.isPopular) {
+        await db
+          .collection(PACKAGES_COLLECTION)
+          .updateMany(
+            { _id: { $ne: new ObjectId(params.id) }, isPopular: true },
+            { $set: { isPopular: false } }
+          );
+      }
+
       const updateData = {
         price: body.price,
         features: body.features,
         isActive: body.isActive,
+        isPopular: body.isPopular !== undefined ? body.isPopular : false,
         updatedAt: new Date(),
       };
 
@@ -146,6 +166,7 @@ export const packagesRouter = new Elysia({ prefix: "/packages" })
         price: t.Number({ minimum: 0 }),
         features: t.Array(t.String()),
         isActive: t.Boolean(),
+        isPopular: t.Optional(t.Boolean()),
       }),
     }
   )

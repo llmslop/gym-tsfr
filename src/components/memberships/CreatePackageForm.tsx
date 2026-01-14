@@ -16,6 +16,7 @@ const packageSchema = z.object({
   price: z.number().min(0, "Price must be positive"),
   currency: z.string(),
   isActive: z.boolean(),
+  isPopular: z.boolean(),
   features: z.array(z.string()).min(1, "Select at least one feature"),
 });
 
@@ -44,6 +45,7 @@ export default function CreatePackageForm({ onSuccess }: CreatePackageFormProps)
       duration: "1-month",
       currency: "VND",
       isActive: true,
+      isPopular: false,
       features: [],
     },
   });
@@ -57,6 +59,7 @@ export default function CreatePackageForm({ onSuccess }: CreatePackageFormProps)
         price: data.price,
         currency: data.currency,
         isActive: data.isActive,
+        isPopular: data.isPopular,
         features: data.features,
       });
 
@@ -213,6 +216,23 @@ export default function CreatePackageForm({ onSuccess }: CreatePackageFormProps)
                 {...register("isActive")}
               />
               <span className="label-text">{t("isActive")}</span>
+            </label>
+          </div>
+
+          {/* Popular Status */}
+          <div className="form-control">
+            <label className="label cursor-pointer justify-start gap-4">
+              <input
+                type="checkbox"
+                className="checkbox checkbox-secondary"
+                {...register("isPopular")}
+              />
+              <span className="label-text">{t("isPopular")}</span>
+            </label>
+            <label className="label">
+              <span className="label-text-alt text-base-content/60">
+                {t("isPopularHint")}
+              </span>
             </label>
           </div>
 
