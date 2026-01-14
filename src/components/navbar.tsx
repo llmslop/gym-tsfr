@@ -18,8 +18,9 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "@/i18n/navigation";
 import { HidePageChrome } from "./hide-page-chrome";
 import { useTranslations } from "next-intl";
+import type { ComponentType, SVGProps } from "react";
 
-type Route = [string, string, React.FC];
+type Route = [string, string, ComponentType<SVGProps<SVGSVGElement>>];
 function buildRoutes(
   t: (key: string) => string,
   role?: string | null
